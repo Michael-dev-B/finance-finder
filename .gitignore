@@ -43,3 +43,7 @@ coverage/
 
 # Claude working docs (local only)
 claude/
+
+# Claude Code local-only state files (shared skill config in .claude/skills/ is committed)
+.claude/settings.local.json
+.claude/scheduled_tasks.lock
