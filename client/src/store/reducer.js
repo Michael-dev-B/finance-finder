@@ -3,6 +3,7 @@ import {
   SET_TRANSACTIONS, ADD_TRANSACTION, UPDATE_TRANSACTION, DELETE_TRANSACTION,
   SET_TAGS, ADD_TAG, UPDATE_TAG, DELETE_TAG,
   SET_CATEGORY_GROUPS, ADD_CATEGORY_GROUP, UPDATE_CATEGORY_GROUP, DELETE_CATEGORY_GROUP,
+  SET_RECURRING, ADD_RECURRING, UPDATE_RECURRING, DELETE_RECURRING,
   SET_ACTIVE_MONTH, SET_LOADING, SET_ERROR,
 } from './actions.js';
 import { currentMonth } from '../lib/date.js';
@@ -12,6 +13,7 @@ export const initialState = {
   transactions: [],
   tags: [],
   categoryGroups: [],
+  recurring: [],
   activeMonth: currentMonth(),
   loading: false,
   error: null,
@@ -71,6 +73,18 @@ export function reducer(state, { type, payload }) {
         ...state,
         categoryGroups: state.categoryGroups.filter((g) => g.id !== payload),
       };
+
+    case SET_RECURRING:
+      return { ...state, recurring: payload };
+    case ADD_RECURRING:
+      return { ...state, recurring: [...state.recurring, payload] };
+    case UPDATE_RECURRING:
+      return {
+        ...state,
+        recurring: state.recurring.map((r) => (r.id === payload.id ? payload : r)),
+      };
+    case DELETE_RECURRING:
+      return { ...state, recurring: state.recurring.filter((r) => r.id !== payload) };
 
     case SET_ACTIVE_MONTH:
       return { ...state, activeMonth: payload, transactions: [] };
