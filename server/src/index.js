@@ -1,9 +1,11 @@
 import express from 'express';
+import cors from 'cors';
 import './db/index.js';
 import categoriesRouter from './routes/categories.js';
 import transactionsRouter from './routes/transactions.js';
 
 const app = express();
+app.use(cors());
 app.use(express.json());
 
 app.get('/api/health', (req, res) => {
