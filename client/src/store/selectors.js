@@ -2,6 +2,7 @@ export function selectMonthlyTotals(state) {
   let incomeCents = 0;
   let expenseCents = 0;
   for (const t of state.transactions) {
+    if (t.has_splits) continue;
     if (t.type === 'income') incomeCents += t.amount_cents;
     else expenseCents += t.amount_cents;
   }
@@ -11,7 +12,7 @@ export function selectMonthlyTotals(state) {
 export function selectCategorySpend(state) {
   const spend = new Map();
   for (const t of state.transactions) {
-    if (t.type !== 'expense' || t.category_id == null) continue;
+    if (t.has_splits || t.type !== 'expense' || t.category_id == null) continue;
     spend.set(t.category_id, (spend.get(t.category_id) ?? 0) + t.amount_cents);
   }
   return spend;
