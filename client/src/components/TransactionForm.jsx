@@ -8,7 +8,7 @@ function todayISO() {
   return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
 }
 
-const DEFAULTS = { amount: '', type: 'expense', categoryId: '', date: todayISO(), note: '' };
+const DEFAULTS = { amount: '', type: 'expense', categoryId: '', date: todayISO(), note: '', tagIds: [] };
 
 export default function TransactionForm({ editing, onDone }) {
   const { state, dispatch } = useStore();
@@ -24,6 +24,7 @@ export default function TransactionForm({ editing, onDone }) {
         categoryId: editing.category_id ?? '',
         date: editing.occurred_on,
         note: editing.note ?? '',
+        tagIds: editing.tags ? editing.tags.map((t) => t.id) : [],
       });
     } else {
       setFields(DEFAULTS);
@@ -33,6 +34,15 @@ export default function TransactionForm({ editing, onDone }) {
 
   function set(key, value) {
     setFields((f) => ({ ...f, [key]: value }));
+  }
+
+  function toggleTag(tagId) {
+    setFields((f) => ({
+      ...f,
+      tagIds: f.tagIds.includes(tagId)
+        ? f.tagIds.filter((id) => id !== tagId)
+        : [...f.tagIds, tagId],
+    }));
   }
 
   async function handleSubmit(e) {
@@ -55,6 +65,7 @@ export default function TransactionForm({ editing, onDone }) {
       category_id: fields.categoryId ? Number(fields.categoryId) : null,
       occurred_on: fields.date,
       note: fields.note || null,
+      tag_ids: fields.tagIds,
     };
 
     try {
@@ -63,7 +74,6 @@ export default function TransactionForm({ editing, onDone }) {
         dispatch({ type: UPDATE_TRANSACTION, payload: updated });
       } else {
         const created = await createTransaction(payload);
-        // Only add to list if it belongs to the active month
         if (created.occurred_on.startsWith(state.activeMonth)) {
           dispatch({ type: ADD_TRANSACTION, payload: created });
         }
@@ -158,6 +168,33 @@ export default function TransactionForm({ editing, onDone }) {
           className="w-full rounded border border-border bg-bg px-3 py-2 text-ink placeholder:text-muted focus:border-accent focus:outline-none"
         />
       </div>
+
+      {/* Tags */}
+      {state.tags.length > 0 && (
+        <div>
+          <span className="mb-2 block text-sm font-medium text-ink">Tags</span>
+          <div className="flex flex-wrap gap-2">
+            {state.tags.map((tag) => {
+              const selected = fields.tagIds.includes(tag.id);
+              return (
+                <button
+                  key={tag.id}
+                  type="button"
+                  onClick={() => toggleTag(tag.id)}
+                  className="rounded-full border px-2.5 py-0.5 text-xs font-medium"
+                  style={{
+                    borderColor: tag.colour,
+                    color: tag.colour,
+                    opacity: selected ? 1 : 0.4,
+                  }}
+                >
+                  {tag.name}
+                </button>
+              );
+            })}
+          </div>
+        </div>
+      )}
 
       <div className="flex gap-3">
         <button

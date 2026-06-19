@@ -27,7 +27,7 @@ export default function TransactionList({ onEdit }) {
           <tr className="border-b border-border bg-bg text-left text-xs font-medium uppercase tracking-wide text-muted">
             <th className="px-4 py-3">Date</th>
             <th className="hidden px-4 py-3 sm:table-cell">Note</th>
-            <th className="px-4 py-3">Category</th>
+            <th className="px-4 py-3">Category / Tags</th>
             <th className="px-4 py-3 text-right">Amount</th>
             <th className="px-4 py-3"></th>
           </tr>
@@ -40,15 +40,28 @@ export default function TransactionList({ onEdit }) {
                 <td className="whitespace-nowrap px-4 py-3 text-muted">
                   {toDisplayDate(t.occurred_on)}
                 </td>
-                <td className="hidden px-4 py-3 text-ink sm:table-cell">{t.note || <span className="text-muted">—</span>}</td>
+                <td className="hidden px-4 py-3 text-ink sm:table-cell">
+                  {t.note || <span className="text-muted">—</span>}
+                </td>
                 <td className="px-4 py-3">
-                  <span className="flex items-center gap-2">
-                    <span
-                      className="inline-block h-3 w-3 shrink-0 rounded-full"
-                      style={{ backgroundColor: cat?.colour ?? '#94a3b8' }}
-                    />
-                    <span className="text-muted">{cat?.name ?? 'Uncategorised'}</span>
-                  </span>
+                  <div className="flex flex-wrap items-center gap-1.5">
+                    <span className="flex items-center gap-1.5">
+                      <span
+                        className="inline-block h-3 w-3 shrink-0 rounded-full"
+                        style={{ backgroundColor: cat?.colour ?? '#94a3b8' }}
+                      />
+                      <span className="text-muted">{cat?.name ?? 'Uncategorised'}</span>
+                    </span>
+                    {t.tags?.map((tag) => (
+                      <span
+                        key={tag.id}
+                        className="rounded-full border px-2 py-0.5 text-xs"
+                        style={{ borderColor: tag.colour, color: tag.colour }}
+                      >
+                        {tag.name}
+                      </span>
+                    ))}
+                  </div>
                 </td>
                 <td className="whitespace-nowrap px-4 py-3 text-right">
                   <span className={t.type === 'income' ? 'font-medium text-income' : 'font-medium text-expense'}>

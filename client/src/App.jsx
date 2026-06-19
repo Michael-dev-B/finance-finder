@@ -6,6 +6,7 @@ import CategoryChart from './components/CategoryChart.jsx';
 import TransactionForm from './components/TransactionForm.jsx';
 import TransactionList from './components/TransactionList.jsx';
 import CategoryManager from './components/CategoryManager.jsx';
+import TagManager from './components/TagManager.jsx';
 
 function prevMonth(yyyyMm) {
   const [y, m] = yyyyMm.split('-').map(Number);
@@ -25,6 +26,7 @@ export default function App() {
   const { state, dispatch } = useStore();
   const [editingTransaction, setEditingTransaction] = useState(null);
   const [showCategories, setShowCategories] = useState(false);
+  const [showTags, setShowTags] = useState(false);
 
   function handleMonthChange(month) {
     dispatch({ type: SET_ACTIVE_MONTH, payload: month });
@@ -110,6 +112,22 @@ export default function App() {
           {showCategories && (
             <div className="mt-4 rounded-lg border border-border bg-surface p-5">
               <CategoryManager />
+            </div>
+          )}
+        </section>
+
+        {/* Tag manager (toggle) */}
+        <section>
+          <button
+            onClick={() => setShowTags((v) => !v)}
+            className="flex items-center gap-2 text-sm font-medium text-muted hover:text-ink"
+          >
+            <span>{showTags ? '▴' : '▾'}</span>
+            Manage tags
+          </button>
+          {showTags && (
+            <div className="mt-4 rounded-lg border border-border bg-surface p-5">
+              <TagManager />
             </div>
           )}
         </section>
