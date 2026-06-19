@@ -1,3 +1,4 @@
+/* eslint-disable react-refresh/only-export-components */
 import { createContext, useContext, useReducer, useEffect } from 'react';
 import { reducer, initialState } from './reducer.js';
 import { SET_CATEGORIES, SET_TRANSACTIONS, SET_LOADING, SET_ERROR } from './actions.js';
