@@ -4,12 +4,14 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "dev": "node --watch src/index.js",
-    "start": "node src/index.js",
+    "dev": "node --watch --env-file=../.env src/index.js",
+    "start": "node --env-file=../.env src/index.js",
+    "migrate": "node --env-file=../.env src/db/migrate.js",
     "lint": "eslint .",
     "format": "prettier --write ."
   },
   "dependencies": {
+    "better-sqlite3": "^11.7.0",
     "dotenv": "^16.4.7",
     "express": "^4.21.2"
   },

@@ -1,13 +1,17 @@
-import 'dotenv/config';
 import express from 'express';
+import './db/index.js';
+import categoriesRouter from './routes/categories.js';
+import transactionsRouter from './routes/transactions.js';
 
 const app = express();
 app.use(express.json());
 
-// Health check — confirms the API is up. Resource routers are added in later tasks.
 app.get('/api/health', (req, res) => {
   res.json({ status: 'ok' });
 });
+
+app.use('/api/categories', categoriesRouter);
+app.use('/api/transactions', transactionsRouter);
 
 const port = process.env.PORT || 4000;
 app.listen(port, () => {
