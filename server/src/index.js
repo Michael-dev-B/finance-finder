@@ -5,6 +5,7 @@ import categoriesRouter from './routes/categories.js';
 import transactionsRouter from './routes/transactions.js';
 import tagsRouter from './routes/tags.js';
 import categoryGroupsRouter from './routes/categoryGroups.js';
+import recurringRouter from './routes/recurring.js';
 
 const app = express();
 app.use(cors());
@@ -18,6 +19,7 @@ app.use('/api/categories', categoriesRouter);
 app.use('/api/transactions', transactionsRouter);
 app.use('/api/tags', tagsRouter);
 app.use('/api/category-groups', categoryGroupsRouter);
+app.use('/api/recurring', recurringRouter);
 
 const port = process.env.PORT || 4000;
 app.listen(port, () => {
