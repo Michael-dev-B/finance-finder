@@ -1,3 +1,30 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
 @import 'tailwindcss';
 
-/* Brand tokens (palette, spacing, type) are added in T2 via @theme. */
+@theme {
+  /* Brand palette — OKLCH */
+  --color-primary:  oklch(38% 0.10 185);   /* Deep teal: brand, nav, headings */
+  --color-accent:   oklch(55% 0.16 155);   /* Brighter teal-green: CTAs, active */
+  --color-bg:       oklch(98% 0.004 185);  /* Off-white tinted toward primary */
+  --color-surface:  oklch(100% 0 0);       /* Cards / panels */
+  --color-ink:      oklch(18% 0.03 185);   /* Near-black body text */
+  --color-muted:    oklch(55% 0.02 185);   /* Secondary labels, captions */
+  --color-border:   oklch(88% 0.01 185);   /* Dividers */
+  --color-income:   oklch(48% 0.14 145);   /* Income green */
+  --color-expense:  oklch(50% 0.12 25);    /* Expense terracotta (not pure red) */
+
+  /* Typography */
+  --font-family-sans: 'Inter', ui-sans-serif, system-ui, sans-serif;
+  --font-family-mono: ui-monospace, 'Cascadia Code', monospace;
+}
+
+/* Base styles */
+body {
+  background-color: var(--color-bg);
+  color: var(--color-ink);
+  font-family: var(--font-family-sans);
+  /* Tabular numerals as default — CLAUDE.md non-negotiable for money display */
+  font-feature-settings: 'tnum';
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
