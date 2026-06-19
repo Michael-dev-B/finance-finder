@@ -20,6 +20,13 @@ function validate(body) {
   ) {
     errors.push('monthly_budget_cents must be a positive integer');
   }
+  if (
+    body.group_id !== undefined &&
+    body.group_id !== null &&
+    !Number.isInteger(body.group_id)
+  ) {
+    errors.push('group_id must be an integer or null');
+  }
   return errors;
 }
 
@@ -32,12 +39,12 @@ router.post('/', (req, res) => {
   const errors = validate(req.body);
   if (errors.length) return res.status(400).json({ errors });
 
-  const { name, colour, monthly_budget_cents = null } = req.body;
+  const { name, colour, monthly_budget_cents = null, group_id = null } = req.body;
   const result = db
     .prepare(
-      'INSERT INTO categories (name, colour, monthly_budget_cents) VALUES (?, ?, ?)',
+      'INSERT INTO categories (name, colour, monthly_budget_cents, group_id) VALUES (?, ?, ?, ?)',
     )
-    .run(name.trim(), colour, monthly_budget_cents);
+    .run(name.trim(), colour, monthly_budget_cents, group_id);
 
   const created = db
     .prepare('SELECT * FROM categories WHERE id = ?')
@@ -54,10 +61,10 @@ router.put('/:id', (req, res) => {
   const errors = validate(req.body);
   if (errors.length) return res.status(400).json({ errors });
 
-  const { name, colour, monthly_budget_cents = null } = req.body;
+  const { name, colour, monthly_budget_cents = null, group_id = null } = req.body;
   db.prepare(
-    'UPDATE categories SET name = ?, colour = ?, monthly_budget_cents = ? WHERE id = ?',
-  ).run(name.trim(), colour, monthly_budget_cents, req.params.id);
+    'UPDATE categories SET name = ?, colour = ?, monthly_budget_cents = ?, group_id = ? WHERE id = ?',
+  ).run(name.trim(), colour, monthly_budget_cents, group_id, req.params.id);
 
   const updated = db
     .prepare('SELECT * FROM categories WHERE id = ?')
