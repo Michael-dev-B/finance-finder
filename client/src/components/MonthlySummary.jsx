@@ -5,6 +5,9 @@ export default function MonthlySummary() {
   const { state } = useStore();
   const { incomeCents, expenseCents, netCents } = selectMonthlyTotals(state);
   const budgets = selectBudgetRemaining(state);
+  const recurringExpenseTotal = state.recurring
+    .filter((r) => r.active && r.type === 'expense')
+    .reduce((s, r) => s + r.amount_cents, 0);
 
   const netColour =
     netCents > 0 ? 'text-income' : netCents < 0 ? 'text-expense' : 'text-muted';
@@ -31,6 +34,14 @@ export default function MonthlySummary() {
           <p className={`mt-0.5 text-lg font-semibold ${netColour} ${pulseClass}`}>{formatZAR(Math.abs(netCents))}</p>
         </div>
       </div>
+
+      {/* Min. commitments */}
+      {recurringExpenseTotal > 0 && (
+        <p className="text-xs text-muted">
+          Min. monthly commitments:{' '}
+          <span className="font-medium text-ink">{formatZAR(recurringExpenseTotal)}</span>
+        </p>
+      )}
 
       {/* Budget remaining */}
       {budgets.length > 0 && (
