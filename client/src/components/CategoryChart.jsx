@@ -22,7 +22,9 @@ export default function CategoryChart() {
       </h2>
       {data.length === 0 ? (
         <div className="flex flex-1 items-center justify-center py-10">
-          <p className="text-sm text-muted">No expense data this month.</p>
+          <p className="text-sm text-muted">
+            {state.loading ? 'Loading…' : 'No expense data this month.'}
+          </p>
         </div>
       ) : (
         <ResponsiveContainer width="100%" height={220}>

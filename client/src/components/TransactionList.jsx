@@ -21,12 +21,12 @@ export default function TransactionList({ onEdit }) {
   }
 
   return (
-    <div className="overflow-hidden rounded-lg border border-border">
+    <div className="overflow-x-auto rounded-lg border border-border">
       <table className="w-full text-sm">
         <thead>
           <tr className="border-b border-border bg-bg text-left text-xs font-medium uppercase tracking-wide text-muted">
             <th className="px-4 py-3">Date</th>
-            <th className="px-4 py-3">Note</th>
+            <th className="hidden px-4 py-3 sm:table-cell">Note</th>
             <th className="px-4 py-3">Category</th>
             <th className="px-4 py-3 text-right">Amount</th>
             <th className="px-4 py-3"></th>
@@ -40,7 +40,7 @@ export default function TransactionList({ onEdit }) {
                 <td className="whitespace-nowrap px-4 py-3 text-muted">
                   {toDisplayDate(t.occurred_on)}
                 </td>
-                <td className="px-4 py-3 text-ink">{t.note || <span className="text-muted">—</span>}</td>
+                <td className="hidden px-4 py-3 text-ink sm:table-cell">{t.note || <span className="text-muted">—</span>}</td>
                 <td className="px-4 py-3">
                   <span className="flex items-center gap-2">
                     <span

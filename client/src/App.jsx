@@ -31,13 +31,25 @@ export default function App() {
     setEditingTransaction(null);
   }
 
+  if (state.loading && state.categories.length === 0) {
+    return (
+      <div className="flex min-h-screen items-center justify-center bg-bg">
+        <span className="animate-pulse text-sm text-muted">Loading…</span>
+      </div>
+    );
+  }
+
+  const monthSwitching = state.loading && state.categories.length > 0;
+
   return (
     <div className="min-h-screen bg-bg">
       {/* Header */}
-      <header className="border-b border-border bg-surface px-6 py-4">
+      <header className="border-b border-border bg-surface px-4 py-4 sm:px-6">
         <div className="mx-auto flex max-w-5xl items-center justify-between">
           <h1 className="text-xl font-semibold text-primary">Finance Finder</h1>
-          <div className="flex items-center gap-3">
+          <div
+            className={`flex items-center gap-3${monthSwitching ? ' pointer-events-none opacity-50' : ''}`}
+          >
             <button
               onClick={() => handleMonthChange(prevMonth(state.activeMonth))}
               className="rounded px-2 py-1 text-muted hover:text-ink"
@@ -57,7 +69,7 @@ export default function App() {
         </div>
       </header>
 
-      <main className="mx-auto max-w-5xl space-y-6 px-6 py-6">
+      <main className="mx-auto max-w-5xl space-y-6 px-4 py-6 sm:px-6">
         {state.error && (
           <div className="rounded border border-expense/30 bg-expense/10 px-4 py-3 text-sm text-expense">
             {state.error}

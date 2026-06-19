@@ -8,6 +8,7 @@ export default function MonthlySummary() {
 
   const netColour =
     netCents > 0 ? 'text-income' : netCents < 0 ? 'text-expense' : 'text-muted';
+  const pulseClass = state.loading ? 'animate-pulse' : '';
 
   return (
     <div className="space-y-4 rounded-lg border border-border bg-surface p-5">
@@ -19,15 +20,15 @@ export default function MonthlySummary() {
       <div className="grid grid-cols-3 gap-3">
         <div>
           <p className="text-xs text-muted">Income</p>
-          <p className="mt-0.5 text-lg font-semibold text-income">{formatZAR(incomeCents)}</p>
+          <p className={`mt-0.5 text-lg font-semibold text-income ${pulseClass}`}>{formatZAR(incomeCents)}</p>
         </div>
         <div>
           <p className="text-xs text-muted">Expenses</p>
-          <p className="mt-0.5 text-lg font-semibold text-expense">{formatZAR(expenseCents)}</p>
+          <p className={`mt-0.5 text-lg font-semibold text-expense ${pulseClass}`}>{formatZAR(expenseCents)}</p>
         </div>
         <div>
           <p className="text-xs text-muted">Net</p>
-          <p className={`mt-0.5 text-lg font-semibold ${netColour}`}>{formatZAR(Math.abs(netCents))}</p>
+          <p className={`mt-0.5 text-lg font-semibold ${netColour} ${pulseClass}`}>{formatZAR(Math.abs(netCents))}</p>
         </div>
       </div>
 
