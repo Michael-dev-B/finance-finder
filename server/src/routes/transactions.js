@@ -31,6 +31,38 @@ function validate(body) {
   return errors;
 }
 
+function withTags(rows) {
+  if (rows.length === 0) return rows;
+  const ids = rows.map((r) => r.id);
+  const placeholders = ids.map(() => '?').join(',');
+  const tagLinks = db
+    .prepare(
+      `SELECT tt.transaction_id, t.id, t.name, t.colour
+       FROM transaction_tags tt
+       JOIN tags t ON t.id = tt.tag_id
+       WHERE tt.transaction_id IN (${placeholders})
+       ORDER BY t.name`,
+    )
+    .all(...ids);
+  const tagMap = {};
+  for (const { transaction_id, ...tag } of tagLinks) {
+    (tagMap[transaction_id] ??= []).push(tag);
+  }
+  return rows.map((r) => ({ ...r, tags: tagMap[r.id] ?? [] }));
+}
+
+function syncTags(transactionId, tagIds) {
+  db.prepare('DELETE FROM transaction_tags WHERE transaction_id = ?').run(transactionId);
+  if (Array.isArray(tagIds) && tagIds.length > 0) {
+    const insert = db.prepare(
+      'INSERT OR IGNORE INTO transaction_tags (transaction_id, tag_id) VALUES (?, ?)',
+    );
+    for (const tagId of tagIds) {
+      insert.run(transactionId, tagId);
+    }
+  }
+}
+
 router.get('/', (req, res) => {
   const { month } = req.query;
   if (month !== undefined && !MONTH_RE.test(month)) {
@@ -45,24 +77,26 @@ router.get('/', (req, res) => {
         .all(month)
     : db.prepare('SELECT * FROM transactions ORDER BY occurred_on DESC').all();
 
-  res.json(rows);
+  res.json(withTags(rows));
 });
 
 router.post('/', (req, res) => {
   const errors = validate(req.body);
   if (errors.length) return res.status(400).json({ errors });
 
-  const { amount_cents, type, category_id = null, occurred_on, note = null } = req.body;
+  const { amount_cents, type, category_id = null, occurred_on, note = null, tag_ids } =
+    req.body;
   const result = db
     .prepare(
       'INSERT INTO transactions (amount_cents, type, category_id, occurred_on, note) VALUES (?, ?, ?, ?, ?)',
     )
     .run(amount_cents, type, category_id, occurred_on, note);
 
+  syncTags(result.lastInsertRowid, tag_ids);
   const created = db
     .prepare('SELECT * FROM transactions WHERE id = ?')
     .get(result.lastInsertRowid);
-  res.status(201).json(created);
+  res.status(201).json(withTags([created])[0]);
 });
 
 router.put('/:id', (req, res) => {
@@ -74,15 +108,17 @@ router.put('/:id', (req, res) => {
   const errors = validate(req.body);
   if (errors.length) return res.status(400).json({ errors });
 
-  const { amount_cents, type, category_id = null, occurred_on, note = null } = req.body;
+  const { amount_cents, type, category_id = null, occurred_on, note = null, tag_ids } =
+    req.body;
   db.prepare(
     'UPDATE transactions SET amount_cents = ?, type = ?, category_id = ?, occurred_on = ?, note = ? WHERE id = ?',
   ).run(amount_cents, type, category_id, occurred_on, note, req.params.id);
 
+  syncTags(Number(req.params.id), tag_ids);
   const updated = db
     .prepare('SELECT * FROM transactions WHERE id = ?')
     .get(req.params.id);
-  res.json(updated);
+  res.json(withTags([updated])[0]);
 });
 
 router.delete('/:id', (req, res) => {
