@@ -1,6 +1,9 @@
 import {
   SET_CATEGORIES, ADD_CATEGORY, UPDATE_CATEGORY, DELETE_CATEGORY,
   SET_TRANSACTIONS, ADD_TRANSACTION, UPDATE_TRANSACTION, DELETE_TRANSACTION,
+  SET_TAGS, ADD_TAG, UPDATE_TAG, DELETE_TAG,
+  SET_CATEGORY_GROUPS, ADD_CATEGORY_GROUP, UPDATE_CATEGORY_GROUP, DELETE_CATEGORY_GROUP,
+  SET_RECURRING, ADD_RECURRING, UPDATE_RECURRING, DELETE_RECURRING,
   SET_ACTIVE_MONTH, SET_LOADING, SET_ERROR,
 } from './actions.js';
 import { currentMonth } from '../lib/date.js';
@@ -8,6 +11,9 @@ import { currentMonth } from '../lib/date.js';
 export const initialState = {
   categories: [],
   transactions: [],
+  tags: [],
+  categoryGroups: [],
+  recurring: [],
   activeMonth: currentMonth(),
   loading: false,
   error: null,
@@ -38,6 +44,47 @@ export function reducer(state, { type, payload }) {
       };
     case DELETE_TRANSACTION:
       return { ...state, transactions: state.transactions.filter((t) => t.id !== payload) };
+
+    case SET_TAGS:
+      return { ...state, tags: payload };
+    case ADD_TAG:
+      return { ...state, tags: [...state.tags, payload] };
+    case UPDATE_TAG:
+      return {
+        ...state,
+        tags: state.tags.map((t) => (t.id === payload.id ? payload : t)),
+      };
+    case DELETE_TAG:
+      return { ...state, tags: state.tags.filter((t) => t.id !== payload) };
+
+    case SET_CATEGORY_GROUPS:
+      return { ...state, categoryGroups: payload };
+    case ADD_CATEGORY_GROUP:
+      return { ...state, categoryGroups: [...state.categoryGroups, payload] };
+    case UPDATE_CATEGORY_GROUP:
+      return {
+        ...state,
+        categoryGroups: state.categoryGroups.map((g) =>
+          g.id === payload.id ? payload : g,
+        ),
+      };
+    case DELETE_CATEGORY_GROUP:
+      return {
+        ...state,
+        categoryGroups: state.categoryGroups.filter((g) => g.id !== payload),
+      };
+
+    case SET_RECURRING:
+      return { ...state, recurring: payload };
+    case ADD_RECURRING:
+      return { ...state, recurring: [...state.recurring, payload] };
+    case UPDATE_RECURRING:
+      return {
+        ...state,
+        recurring: state.recurring.map((r) => (r.id === payload.id ? payload : r)),
+      };
+    case DELETE_RECURRING:
+      return { ...state, recurring: state.recurring.filter((r) => r.id !== payload) };
 
     case SET_ACTIVE_MONTH:
       return { ...state, activeMonth: payload, transactions: [] };

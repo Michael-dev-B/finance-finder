@@ -6,6 +6,10 @@ import CategoryChart from './components/CategoryChart.jsx';
 import TransactionForm from './components/TransactionForm.jsx';
 import TransactionList from './components/TransactionList.jsx';
 import CategoryManager from './components/CategoryManager.jsx';
+import TagManager from './components/TagManager.jsx';
+import RecurringForm from './components/RecurringForm.jsx';
+import RecurringList from './components/RecurringList.jsx';
+import UpcomingProjection from './components/UpcomingProjection.jsx';
 
 function prevMonth(yyyyMm) {
   const [y, m] = yyyyMm.split('-').map(Number);
@@ -24,7 +28,10 @@ function nextMonth(yyyyMm) {
 export default function App() {
   const { state, dispatch } = useStore();
   const [editingTransaction, setEditingTransaction] = useState(null);
-  const [showCategories, setShowCategories] = useState(false);
+  const [showCategories, setShowCategories]   = useState(false);
+  const [showTags, setShowTags]               = useState(false);
+  const [showRecurring, setShowRecurring]     = useState(false);
+  const [editingRecurring, setEditingRecurring] = useState(null);
 
   function handleMonthChange(month) {
     dispatch({ type: SET_ACTIVE_MONTH, payload: month });
@@ -76,11 +83,12 @@ export default function App() {
           </div>
         )}
 
-        {/* Summary + Chart */}
+        {/* Summary + Chart + Upcoming */}
         <div className="grid gap-6 md:grid-cols-2">
           <MonthlySummary />
           <CategoryChart />
         </div>
+        <UpcomingProjection />
 
         {/* Transaction form */}
         <section className="rounded-lg border border-border bg-surface p-5">
@@ -110,6 +118,50 @@ export default function App() {
           {showCategories && (
             <div className="mt-4 rounded-lg border border-border bg-surface p-5">
               <CategoryManager />
+            </div>
+          )}
+        </section>
+
+        {/* Tag manager (toggle) */}
+        <section>
+          <button
+            onClick={() => setShowTags((v) => !v)}
+            className="flex items-center gap-2 text-sm font-medium text-muted hover:text-ink"
+          >
+            <span>{showTags ? '▴' : '▾'}</span>
+            Manage tags
+          </button>
+          {showTags && (
+            <div className="mt-4 rounded-lg border border-border bg-surface p-5">
+              <TagManager />
+            </div>
+          )}
+        </section>
+
+        {/* Recurring items (toggle) */}
+        <section>
+          <button
+            onClick={() => setShowRecurring((v) => !v)}
+            className="flex items-center gap-2 text-sm font-medium text-muted hover:text-ink"
+          >
+            <span>{showRecurring ? '▴' : '▾'}</span>
+            Manage recurring items
+          </button>
+          {showRecurring && (
+            <div className="mt-4 space-y-6 rounded-lg border border-border bg-surface p-5">
+              <div>
+                <h3 className="mb-3 text-sm font-medium text-ink">
+                  {editingRecurring ? 'Edit recurring item' : 'Add recurring item'}
+                </h3>
+                <RecurringForm
+                  editing={editingRecurring}
+                  onDone={() => setEditingRecurring(null)}
+                />
+              </div>
+              <div className="border-t border-border pt-4">
+                <h3 className="mb-3 text-sm font-medium text-ink">Recurring items</h3>
+                <RecurringList onEdit={setEditingRecurring} />
+              </div>
             </div>
           )}
         </section>

@@ -1,9 +1,11 @@
 import { useState } from 'react';
-import { useStore, ADD_CATEGORY, UPDATE_CATEGORY, DELETE_CATEGORY } from '../store/index.js';
+import {
+  useStore, ADD_CATEGORY, UPDATE_CATEGORY, DELETE_CATEGORY,
+} from '../store/index.js';
 import { createCategory, updateCategory, deleteCategory } from '../api/categories.js';
 import { formatZAR, parseCentsFromInput } from '../lib/money.js';
 
-const DEFAULTS = { name: '', colour: '#22c55e', budget: '' };
+const DEFAULTS = { name: '', colour: '#22c55e', budget: '', groupId: '' };
 
 export default function CategoryManager() {
   const { state, dispatch } = useStore();
@@ -20,6 +22,7 @@ export default function CategoryManager() {
       budget: cat.monthly_budget_cents
         ? (cat.monthly_budget_cents / 100).toFixed(2).replace('.', ',')
         : '',
+      groupId: cat.group_id ? String(cat.group_id) : '',
     });
     setError('');
   }
@@ -48,7 +51,12 @@ export default function CategoryManager() {
 
     setError('');
     setSaving(true);
-    const payload = { name: fields.name.trim(), colour: fields.colour, monthly_budget_cents };
+    const payload = {
+      name: fields.name.trim(),
+      colour: fields.colour,
+      monthly_budget_cents,
+      group_id: fields.groupId ? Number(fields.groupId) : null,
+    };
 
     try {
       if (editingCategory) {
@@ -71,9 +79,10 @@ export default function CategoryManager() {
     dispatch({ type: DELETE_CATEGORY, payload: id });
   }
 
+  const groupMap = new Map(state.categoryGroups.map((g) => [g.id, g.name]));
+
   return (
     <div className="space-y-5">
-      {/* Form */}
       <form onSubmit={handleSubmit} className="space-y-3">
         <h3 className="text-sm font-semibold text-ink">
           {editingCategory ? `Edit "${editingCategory.name}"` : 'New category'}
@@ -107,6 +116,22 @@ export default function CategoryManager() {
           />
         </div>
 
+        {state.categoryGroups.length > 0 && (
+          <div>
+            <label className="mb-1 block text-sm font-medium text-ink">Group (optional)</label>
+            <select
+              value={fields.groupId}
+              onChange={(e) => set('groupId', e.target.value)}
+              className="rounded border border-border bg-bg px-3 py-2 text-sm text-ink focus:border-accent focus:outline-none"
+            >
+              <option value="">No group</option>
+              {state.categoryGroups.map((g) => (
+                <option key={g.id} value={g.id}>{g.name}</option>
+              ))}
+            </select>
+          </div>
+        )}
+
         <div className="flex gap-2">
           <button
             type="submit"
@@ -127,7 +152,6 @@ export default function CategoryManager() {
         </div>
       </form>
 
-      {/* List */}
       {state.categories.length === 0 ? (
         <p className="text-sm text-muted">No categories yet.</p>
       ) : (
@@ -140,6 +164,11 @@ export default function CategoryManager() {
                   style={{ backgroundColor: cat.colour }}
                 />
                 <span className="text-sm font-medium text-ink">{cat.name}</span>
+                {cat.group_id && (
+                  <span className="rounded-full bg-border px-2 py-0.5 text-xs text-muted">
+                    {groupMap.get(cat.group_id) ?? 'Group'}
+                  </span>
+                )}
                 {cat.monthly_budget_cents && (
                   <span className="text-xs text-muted">
                     {formatZAR(cat.monthly_budget_cents)} / month

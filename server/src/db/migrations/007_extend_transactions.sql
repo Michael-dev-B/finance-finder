@@ -1,0 +1,2 @@
+ALTER TABLE transactions ADD COLUMN split_of    INTEGER REFERENCES transactions(id) ON DELETE CASCADE;
+ALTER TABLE transactions ADD COLUMN is_reviewed INTEGER NOT NULL DEFAULT 0;

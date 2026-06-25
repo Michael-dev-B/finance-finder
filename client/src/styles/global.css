@@ -2,16 +2,16 @@
 @import 'tailwindcss';
 
 @theme {
-  /* Brand palette — OKLCH */
-  --color-primary:  oklch(38% 0.10 185);   /* Deep teal: brand, nav, headings */
-  --color-accent:   oklch(55% 0.16 155);   /* Brighter teal-green: CTAs, active */
-  --color-bg:       oklch(98% 0.004 185);  /* Off-white tinted toward primary */
-  --color-surface:  oklch(100% 0 0);       /* Cards / panels */
-  --color-ink:      oklch(18% 0.03 185);   /* Near-black body text */
-  --color-muted:    oklch(55% 0.02 185);   /* Secondary labels, captions */
-  --color-border:   oklch(88% 0.01 185);   /* Dividers */
-  --color-income:   oklch(48% 0.14 145);   /* Income green */
-  --color-expense:  oklch(50% 0.12 25);    /* Expense terracotta (not pure red) */
+  /* VS Code Dark-inspired palette — OKLCH */
+  --color-bg:      oklch(12% 0.004 245);   /* Editor bg      ~#1e1e1e */
+  --color-surface: oklch(16% 0.004 245);   /* Sidebar/card   ~#252526 */
+  --color-ink:     oklch(84% 0.004 245);   /* Main text      ~#d4d4d4 */
+  --color-muted:   oklch(55% 0.004 245);   /* Comments/meta  ~#858585 */
+  --color-border:  oklch(26% 0.006 245);   /* Dividers       ~#3c3c3c */
+  --color-primary: oklch(75% 0.14 225);    /* Light blue     ~#4fc1ff */
+  --color-accent:  oklch(50% 0.17 250);    /* VS Code blue   ~#007acc */
+  --color-income:  oklch(82% 0.11 88);     /* Yellow-gold    ~#dcdcaa */
+  --color-expense: oklch(62% 0.17 22);     /* Coral-red      ~#f48771 */
 
   /* Typography */
   --font-family-sans: 'Inter', ui-sans-serif, system-ui, sans-serif;
@@ -20,6 +20,7 @@
 
 /* Base styles */
 body {
+  color-scheme: dark;
   background-color: var(--color-bg);
   color: var(--color-ink);
   font-family: var(--font-family-sans);

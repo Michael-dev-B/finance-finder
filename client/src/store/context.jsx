@@ -1,9 +1,15 @@
 /* eslint-disable react-refresh/only-export-components */
 import { createContext, useContext, useReducer, useEffect } from 'react';
 import { reducer, initialState } from './reducer.js';
-import { SET_CATEGORIES, SET_TRANSACTIONS, SET_LOADING, SET_ERROR } from './actions.js';
+import {
+  SET_CATEGORIES, SET_TRANSACTIONS, SET_TAGS, SET_CATEGORY_GROUPS,
+  SET_RECURRING, SET_LOADING, SET_ERROR,
+} from './actions.js';
 import { listCategories } from '../api/categories.js';
 import { listTransactions } from '../api/transactions.js';
+import { listTags } from '../api/tags.js';
+import { listCategoryGroups } from '../api/categoryGroups.js';
+import { listRecurring } from '../api/recurring.js';
 
 const StoreContext = createContext(null);
 
@@ -16,6 +22,24 @@ export function StoreProvider({ children }) {
       .then((cats) => dispatch({ type: SET_CATEGORIES, payload: cats }))
       .catch((err) => dispatch({ type: SET_ERROR, payload: err.message }))
       .finally(() => dispatch({ type: SET_LOADING, payload: false }));
+  }, []);
+
+  useEffect(() => {
+    listTags()
+      .then((tags) => dispatch({ type: SET_TAGS, payload: tags }))
+      .catch((err) => dispatch({ type: SET_ERROR, payload: err.message }));
+  }, []);
+
+  useEffect(() => {
+    listCategoryGroups()
+      .then((groups) => dispatch({ type: SET_CATEGORY_GROUPS, payload: groups }))
+      .catch((err) => dispatch({ type: SET_ERROR, payload: err.message }));
+  }, []);
+
+  useEffect(() => {
+    listRecurring()
+      .then((items) => dispatch({ type: SET_RECURRING, payload: items }))
+      .catch((err) => dispatch({ type: SET_ERROR, payload: err.message }));
   }, []);
 
   useEffect(() => {
