@@ -19,6 +19,7 @@ server/dist/
 *.sqlite3
 *.db
 data/
+server/data/
 
 # Logs
 *.log
@@ -32,7 +33,10 @@ pnpm-debug.log*
 .idea/
 .DS_Store
 Thumbs.db
+ehthumbs.db
+Desktop.ini
 *.swp
+*.lnk
 
 # Test / coverage
 coverage/
@@ -47,3 +51,11 @@ claude/
 # Claude Code local-only state files (shared skill config in .claude/skills/ is committed)
 .claude/settings.local.json
 .claude/scheduled_tasks.lock
+
+# Impeccable design tooling — local only, not for public repo
+.impeccable/
+DESIGN.md
+PRODUCT.md
+
+# Local config overrides (machine-specific, never shared)
+*.local
