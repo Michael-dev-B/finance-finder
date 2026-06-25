@@ -2,16 +2,16 @@
 @import 'tailwindcss';
 
 @theme {
-  /* VS Code Dark-inspired palette — OKLCH */
-  --color-bg:      oklch(12% 0.004 245);   /* Editor bg      ~#1e1e1e */
-  --color-surface: oklch(16% 0.004 245);   /* Sidebar/card   ~#252526 */
-  --color-ink:     oklch(84% 0.004 245);   /* Main text      ~#d4d4d4 */
-  --color-muted:   oklch(55% 0.004 245);   /* Comments/meta  ~#858585 */
-  --color-border:  oklch(26% 0.006 245);   /* Dividers       ~#3c3c3c */
-  --color-primary: oklch(75% 0.14 225);    /* Light blue     ~#4fc1ff */
-  --color-accent:  oklch(50% 0.17 250);    /* VS Code blue   ~#007acc */
-  --color-income:  oklch(82% 0.11 88);     /* Yellow-gold    ~#dcdcaa */
-  --color-expense: oklch(62% 0.17 22);     /* Coral-red      ~#f48771 */
+  /* Command Room palette — OKLCH */
+  --color-bg:      oklch(12% 0.004 245);   /* Command Black  — base canvas */
+  --color-surface: oklch(20% 0.005 245);   /* Panel Surface  — cards, raised panels */
+  --color-ink:     oklch(84% 0.004 245);   /* Ink            — primary text */
+  --color-muted:   oklch(55% 0.004 245);   /* Muted Steel    — labels, secondary */
+  --color-border:  oklch(26% 0.006 245);   /* Subtle Divide  — borders, tracks */
+  --color-primary: oklch(74% 0.18 225);    /* Console Blue   — brand, headings */
+  --color-accent:  oklch(50% 0.17 250);    /* Console Deep   — actions, active state */
+  --color-income:  oklch(80% 0.16 88);     /* Positive Lime  — income, gains */
+  --color-expense: oklch(65% 0.20 22);     /* Outflow Orange — expenses, loss */
 
   /* Typography */
   --font-family-sans: 'Inter', ui-sans-serif, system-ui, sans-serif;

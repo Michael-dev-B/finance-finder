@@ -30,7 +30,12 @@ const tooltipStyle = {
   color: 'var(--color-ink)',
 };
 
-const FALLBACK_COLOURS = ['#4fc1ff', '#dcdcaa', '#f48771', '#6a9955', '#9cdcfe', '#ce9178'];
+const FALLBACK_COLOURS = [
+  'var(--color-primary)',
+  'var(--color-income)',
+  'var(--color-expense)',
+  'var(--color-accent)',
+];
 
 export default function AnalyticsPanel() {
   const today = currentMonth();
@@ -80,8 +85,6 @@ export default function AnalyticsPanel() {
 
   return (
     <div className="space-y-4 rounded-lg border border-border bg-surface p-5">
-      <h2 className="text-sm font-semibold uppercase tracking-wide text-muted">Analytics</h2>
-
       {/* Controls */}
       <div className="flex flex-wrap items-center gap-3">
         <div className="flex items-center gap-2">

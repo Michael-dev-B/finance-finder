@@ -47,7 +47,7 @@ export default function PlanVsActual() {
   return (
     <div className="space-y-3">
       <div className="flex items-center justify-between">
-        <h3 className="text-sm font-medium text-ink">Plan vs actual — {state.activeMonth}</h3>
+        <h3 className="text-sm font-semibold uppercase tracking-wide text-muted">Plan vs actual</h3>
         <button
           onClick={exportCSV}
           className="rounded border border-border px-3 py-1.5 text-xs text-muted hover:text-ink"
@@ -68,13 +68,13 @@ export default function PlanVsActual() {
               <th className="px-4 py-3">Status</th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-border bg-surface">
+          <tbody className="divide-y divide-border bg-bg">
             {rows.map(({ cat, spent, budget, remaining, pct, label, colour }) => {
               const barPct  = Math.min(pct * 100, 100);
               const barColour =
                 pct > 1 ? 'bg-expense' : pct >= 0.8 ? 'bg-primary' : 'bg-income';
               return (
-                <tr key={cat.id} className="hover:bg-bg">
+                <tr key={cat.id} className="hover:bg-surface">
                   <td className="px-4 py-3">
                     <span className="flex items-center gap-2">
                       <span className="inline-block h-3 w-3 shrink-0 rounded-full" style={{ backgroundColor: cat.colour }} />
@@ -87,7 +87,7 @@ export default function PlanVsActual() {
                     {remaining < 0 ? `−${formatZAR(-remaining)}` : formatZAR(remaining)}
                   </td>
                   <td className="px-4 py-3">
-                    <div className="h-1.5 w-full overflow-hidden rounded-full bg-border">
+                    <div className="h-2 w-full overflow-hidden rounded-full bg-border">
                       <div className={`h-full rounded-full ${barColour}`} style={{ width: `${barPct}%` }} />
                     </div>
                   </td>

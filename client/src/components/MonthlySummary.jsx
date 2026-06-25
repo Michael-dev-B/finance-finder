@@ -23,15 +23,15 @@ export default function MonthlySummary() {
       <div className="grid grid-cols-3 gap-3">
         <div>
           <p className="text-xs text-muted">Income</p>
-          <p className={`mt-0.5 text-lg font-semibold text-income ${pulseClass}`}>{formatZAR(incomeCents)}</p>
+          <p className={`mt-0.5 text-2xl font-bold text-income ${pulseClass}`}>{formatZAR(incomeCents)}</p>
         </div>
         <div>
           <p className="text-xs text-muted">Expenses</p>
-          <p className={`mt-0.5 text-lg font-semibold text-expense ${pulseClass}`}>{formatZAR(expenseCents)}</p>
+          <p className={`mt-0.5 text-2xl font-bold text-expense ${pulseClass}`}>{formatZAR(expenseCents)}</p>
         </div>
         <div>
           <p className="text-xs text-muted">Net</p>
-          <p className={`mt-0.5 text-lg font-semibold ${netColour} ${pulseClass}`}>{formatZAR(Math.abs(netCents))}</p>
+          <p className={`mt-0.5 text-2xl font-bold ${netColour} ${pulseClass}`}>{formatZAR(Math.abs(netCents))}</p>
         </div>
       </div>
 
@@ -67,7 +67,7 @@ export default function MonthlySummary() {
                     {formatZAR(spentCents)} / {formatZAR(category.monthly_budget_cents)}
                   </span>
                 </div>
-                <div className="h-1.5 w-full overflow-hidden rounded-full bg-border">
+                <div className="h-2 w-full overflow-hidden rounded-full bg-border">
                   <div
                     className={`h-full rounded-full transition-all ${over ? 'bg-expense' : 'bg-income'}`}
                     style={{ width: `${pct}%` }}

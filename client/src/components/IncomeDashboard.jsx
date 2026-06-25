@@ -110,20 +110,20 @@ export default function IncomeDashboard() {
       <div className="grid grid-cols-2 gap-4 sm:grid-cols-3">
         <div>
           <p className="text-xs text-muted">Total ({range}m)</p>
-          <p className="mt-0.5 text-lg font-semibold text-income">
+          <p className="mt-0.5 text-2xl font-bold text-income">
             {formatZAR(months.reduce((s, mo) => s + mo.total_cents, 0))}
           </p>
         </div>
         <div>
           <p className="text-xs text-muted">Recurring / mo</p>
-          <p className="mt-0.5 text-lg font-semibold text-income">
+          <p className="mt-0.5 text-2xl font-bold text-income">
             {formatZAR(data.recurring_income_monthly_cents)}
           </p>
         </div>
         {momDelta !== null && (
           <div>
             <p className="text-xs text-muted">vs last month</p>
-            <p className={`mt-0.5 text-lg font-semibold ${momDelta >= 0 ? 'text-income' : 'text-expense'}`}>
+            <p className={`mt-0.5 text-2xl font-bold ${momDelta >= 0 ? 'text-income' : 'text-expense'}`}>
               {momDelta >= 0 ? '+' : '−'}{formatZAR(Math.abs(momDelta))}
             </p>
           </div>
