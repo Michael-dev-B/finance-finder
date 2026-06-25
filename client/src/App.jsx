@@ -10,6 +10,11 @@ import TagManager from './components/TagManager.jsx';
 import RecurringForm from './components/RecurringForm.jsx';
 import RecurringList from './components/RecurringList.jsx';
 import UpcomingProjection from './components/UpcomingProjection.jsx';
+import IncomeDashboard from './components/IncomeDashboard.jsx';
+import TrendsChart from './components/TrendsChart.jsx';
+import AnalyticsPanel from './components/AnalyticsPanel.jsx';
+import BudgetManager from './components/BudgetManager.jsx';
+import PlanVsActual from './components/PlanVsActual.jsx';
 
 function prevMonth(yyyyMm) {
   const [y, m] = yyyyMm.split('-').map(Number);
@@ -30,8 +35,12 @@ export default function App() {
   const [editingTransaction, setEditingTransaction] = useState(null);
   const [showCategories, setShowCategories]   = useState(false);
   const [showTags, setShowTags]               = useState(false);
-  const [showRecurring, setShowRecurring]     = useState(false);
+  const [showRecurring, setShowRecurring]       = useState(false);
   const [editingRecurring, setEditingRecurring] = useState(null);
+  const [showIncome, setShowIncome]             = useState(false);
+  const [showTrends, setShowTrends]             = useState(false);
+  const [showAnalytics, setShowAnalytics]       = useState(false);
+  const [showBudget, setShowBudget]             = useState(false);
 
   function handleMonthChange(month) {
     dispatch({ type: SET_ACTIVE_MONTH, payload: month });
@@ -161,6 +170,73 @@ export default function App() {
               <div className="border-t border-border pt-4">
                 <h3 className="mb-3 text-sm font-medium text-ink">Recurring items</h3>
                 <RecurringList onEdit={setEditingRecurring} />
+              </div>
+            </div>
+          )}
+        </section>
+
+        {/* Income analysis (toggle) */}
+        <section>
+          <button
+            onClick={() => setShowIncome((v) => !v)}
+            className="flex items-center gap-2 text-sm font-medium text-muted hover:text-ink"
+          >
+            <span>{showIncome ? '▴' : '▾'}</span>
+            Income analysis
+          </button>
+          {showIncome && (
+            <div className="mt-4">
+              <IncomeDashboard />
+            </div>
+          )}
+        </section>
+
+        {/* Trends (toggle) */}
+        <section>
+          <button
+            onClick={() => setShowTrends((v) => !v)}
+            className="flex items-center gap-2 text-sm font-medium text-muted hover:text-ink"
+          >
+            <span>{showTrends ? '▴' : '▾'}</span>
+            Trends
+          </button>
+          {showTrends && (
+            <div className="mt-4">
+              <TrendsChart />
+            </div>
+          )}
+        </section>
+
+        {/* Analytics (toggle) */}
+        <section>
+          <button
+            onClick={() => setShowAnalytics((v) => !v)}
+            className="flex items-center gap-2 text-sm font-medium text-muted hover:text-ink"
+          >
+            <span>{showAnalytics ? '▴' : '▾'}</span>
+            Analytics
+          </button>
+          {showAnalytics && (
+            <div className="mt-4">
+              <AnalyticsPanel />
+            </div>
+          )}
+        </section>
+
+        {/* Budget (toggle) */}
+        <section>
+          <button
+            onClick={() => setShowBudget((v) => !v)}
+            className="flex items-center gap-2 text-sm font-medium text-muted hover:text-ink"
+          >
+            <span>{showBudget ? '▴' : '▾'}</span>
+            Budget
+          </button>
+          {showBudget && (
+            <div className="mt-4 space-y-6 rounded-lg border border-border bg-surface p-5">
+              <BudgetManager />
+              <div className="border-t border-border pt-4">
+                <PlanVsActual />
               </div>
             </div>
           )}
