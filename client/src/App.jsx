@@ -1,6 +1,8 @@
 import { useState } from 'react';
 import { useStore, SET_ACTIVE_MONTH } from './store/index.js';
 import { monthLabel } from './lib/date.js';
+import { ToastProvider } from './components/Toast.jsx';
+import Sidebar from './components/Sidebar.jsx';
 import MonthlySummary from './components/MonthlySummary.jsx';
 import CategoryChart from './components/CategoryChart.jsx';
 import TransactionForm from './components/TransactionForm.jsx';
@@ -14,7 +16,10 @@ import IncomeDashboard from './components/IncomeDashboard.jsx';
 import TrendsChart from './components/TrendsChart.jsx';
 import AnalyticsPanel from './components/AnalyticsPanel.jsx';
 import BudgetManager from './components/BudgetManager.jsx';
-import PlanVsActual from './components/PlanVsActual.jsx';
+
+function ViewHeading({ children }) {
+  return <h2 className="text-lg font-semibold text-ink">{children}</h2>;
+}
 
 function prevMonth(yyyyMm) {
   const [y, m] = yyyyMm.split('-').map(Number);
@@ -32,15 +37,9 @@ function nextMonth(yyyyMm) {
 
 export default function App() {
   const { state, dispatch } = useStore();
+  const [activeView, setActiveView]               = useState('dashboard');
   const [editingTransaction, setEditingTransaction] = useState(null);
-  const [showCategories, setShowCategories]   = useState(false);
-  const [showTags, setShowTags]               = useState(false);
-  const [showRecurring, setShowRecurring]       = useState(false);
-  const [editingRecurring, setEditingRecurring] = useState(null);
-  const [showIncome, setShowIncome]             = useState(false);
-  const [showTrends, setShowTrends]             = useState(false);
-  const [showAnalytics, setShowAnalytics]       = useState(false);
-  const [showBudget, setShowBudget]             = useState(false);
+  const [editingRecurring, setEditingRecurring]   = useState(null);
 
   function handleMonthChange(month) {
     dispatch({ type: SET_ACTIVE_MONTH, payload: month });
@@ -49,7 +48,7 @@ export default function App() {
 
   if (state.loading && state.categories.length === 0) {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-bg">
+      <div className="flex h-screen items-center justify-center bg-bg">
         <span className="animate-pulse text-sm text-muted">Loading…</span>
       </div>
     );
@@ -57,16 +56,132 @@ export default function App() {
 
   const monthSwitching = state.loading && state.categories.length > 0;
 
+  function renderView() {
+    switch (activeView) {
+      case 'dashboard':
+        return (
+          <>
+            <div className="grid gap-6 md:grid-cols-2">
+              <MonthlySummary />
+              <CategoryChart />
+            </div>
+            <UpcomingProjection />
+          </>
+        );
+
+      case 'transactions':
+        return (
+          <>
+            <section className="rounded-lg border border-border bg-surface p-5">
+              <h2 className="mb-4 text-sm font-semibold uppercase tracking-wide text-muted">
+                {editingTransaction ? 'Edit transaction' : 'Add transaction'}
+              </h2>
+              <TransactionForm
+                editing={editingTransaction}
+                onDone={() => setEditingTransaction(null)}
+              />
+            </section>
+            <div className="rounded-lg border border-border bg-surface p-5">
+              <TransactionList onEdit={setEditingTransaction} />
+            </div>
+          </>
+        );
+
+      case 'income':
+        return (
+          <>
+            <ViewHeading>Income</ViewHeading>
+            <IncomeDashboard />
+          </>
+        );
+
+      case 'trends':
+        return (
+          <>
+            <ViewHeading>Trends</ViewHeading>
+            <TrendsChart />
+          </>
+        );
+
+      case 'analytics':
+        return (
+          <>
+            <ViewHeading>Analytics</ViewHeading>
+            <AnalyticsPanel />
+          </>
+        );
+
+      case 'categories':
+        return (
+          <>
+            <ViewHeading>Categories</ViewHeading>
+            <div className="rounded-lg border border-border bg-surface p-5">
+              <CategoryManager />
+            </div>
+          </>
+        );
+
+      case 'tags':
+        return (
+          <>
+            <ViewHeading>Tags</ViewHeading>
+            <div className="rounded-lg border border-border bg-surface p-5">
+              <TagManager />
+            </div>
+          </>
+        );
+
+      case 'recurring':
+        return (
+          <>
+            <ViewHeading>Recurring</ViewHeading>
+            <div className="space-y-6 rounded-lg border border-border bg-surface p-5">
+              <div>
+                <h3 className="mb-3 text-sm font-semibold uppercase tracking-wide text-muted">
+                  {editingRecurring ? 'Edit recurring item' : 'Add recurring item'}
+                </h3>
+                <RecurringForm
+                  editing={editingRecurring}
+                  onDone={() => setEditingRecurring(null)}
+                />
+              </div>
+              <div className="border-t border-border pt-5">
+                <h3 className="mb-3 text-sm font-semibold uppercase tracking-wide text-muted">
+                  Recurring items
+                </h3>
+                <RecurringList onEdit={setEditingRecurring} />
+              </div>
+            </div>
+          </>
+        );
+
+      case 'budget':
+        return (
+          <>
+            <ViewHeading>Budget</ViewHeading>
+            <div className="rounded-lg border border-border bg-surface p-5">
+              <BudgetManager />
+            </div>
+          </>
+        );
+
+      default:
+        return null;
+    }
+  }
+
   return (
-    <div className="min-h-screen bg-bg">
-      {/* Header */}
+    <ToastProvider>
+    <div className="flex h-screen flex-col bg-bg">
+      {/* Header — full width above sidebar + content */}
       <header className="border-b border-border bg-surface px-4 py-4 sm:px-6">
-        <div className="mx-auto flex max-w-5xl items-center justify-between">
-          <h1 className="text-xl font-semibold text-primary">Finance Finder</h1>
+        <div className="mx-auto flex max-w-full items-center justify-between">
+          <h1 className="text-xl font-bold text-primary">Finance Finder</h1>
           <div
             className={`flex items-center gap-3${monthSwitching ? ' pointer-events-none opacity-50' : ''}`}
           >
             <button
+              aria-label="Previous month"
               onClick={() => handleMonthChange(prevMonth(state.activeMonth))}
               className="rounded px-2 py-1 text-muted hover:text-ink"
             >
@@ -76,6 +191,7 @@ export default function App() {
               {monthLabel(state.activeMonth)}
             </span>
             <button
+              aria-label="Next month"
               onClick={() => handleMonthChange(nextMonth(state.activeMonth))}
               className="rounded px-2 py-1 text-muted hover:text-ink"
             >
@@ -85,163 +201,22 @@ export default function App() {
         </div>
       </header>
 
-      <main className="mx-auto max-w-5xl space-y-6 px-4 py-6 sm:px-6">
-        {state.error && (
-          <div className="rounded border border-expense/30 bg-expense/10 px-4 py-3 text-sm text-expense">
-            {state.error}
+      {/* Two-column shell: sidebar + content */}
+      <div className="flex flex-1 overflow-hidden">
+        <Sidebar activeView={activeView} onNavigate={setActiveView} />
+
+        <main className="flex-1 overflow-y-auto">
+          <div className="mx-auto max-w-5xl space-y-6 px-4 py-6 sm:px-6">
+            {state.error && (
+              <div className="rounded border border-expense/30 bg-expense/10 px-4 py-3 text-sm text-expense">
+                {state.error}
+              </div>
+            )}
+            {renderView()}
           </div>
-        )}
-
-        {/* Summary + Chart + Upcoming */}
-        <div className="grid gap-6 md:grid-cols-2">
-          <MonthlySummary />
-          <CategoryChart />
-        </div>
-        <UpcomingProjection />
-
-        {/* Transaction form */}
-        <section className="rounded-lg border border-border bg-surface p-5">
-          <h2 className="mb-4 text-sm font-semibold uppercase tracking-wide text-muted">
-            {editingTransaction ? 'Edit transaction' : 'Add transaction'}
-          </h2>
-          <TransactionForm
-            editing={editingTransaction}
-            onDone={() => setEditingTransaction(null)}
-          />
-        </section>
-
-        {/* Transaction list */}
-        <section>
-          <TransactionList onEdit={setEditingTransaction} />
-        </section>
-
-        {/* Category manager (toggle) */}
-        <section>
-          <button
-            onClick={() => setShowCategories((v) => !v)}
-            className="flex items-center gap-2 text-sm font-medium text-muted hover:text-ink"
-          >
-            <span>{showCategories ? '▴' : '▾'}</span>
-            Manage categories
-          </button>
-          {showCategories && (
-            <div className="mt-4 rounded-lg border border-border bg-surface p-5">
-              <CategoryManager />
-            </div>
-          )}
-        </section>
-
-        {/* Tag manager (toggle) */}
-        <section>
-          <button
-            onClick={() => setShowTags((v) => !v)}
-            className="flex items-center gap-2 text-sm font-medium text-muted hover:text-ink"
-          >
-            <span>{showTags ? '▴' : '▾'}</span>
-            Manage tags
-          </button>
-          {showTags && (
-            <div className="mt-4 rounded-lg border border-border bg-surface p-5">
-              <TagManager />
-            </div>
-          )}
-        </section>
-
-        {/* Recurring items (toggle) */}
-        <section>
-          <button
-            onClick={() => setShowRecurring((v) => !v)}
-            className="flex items-center gap-2 text-sm font-medium text-muted hover:text-ink"
-          >
-            <span>{showRecurring ? '▴' : '▾'}</span>
-            Manage recurring items
-          </button>
-          {showRecurring && (
-            <div className="mt-4 space-y-6 rounded-lg border border-border bg-surface p-5">
-              <div>
-                <h3 className="mb-3 text-sm font-medium text-ink">
-                  {editingRecurring ? 'Edit recurring item' : 'Add recurring item'}
-                </h3>
-                <RecurringForm
-                  editing={editingRecurring}
-                  onDone={() => setEditingRecurring(null)}
-                />
-              </div>
-              <div className="border-t border-border pt-4">
-                <h3 className="mb-3 text-sm font-medium text-ink">Recurring items</h3>
-                <RecurringList onEdit={setEditingRecurring} />
-              </div>
-            </div>
-          )}
-        </section>
-
-        {/* Income analysis (toggle) */}
-        <section>
-          <button
-            onClick={() => setShowIncome((v) => !v)}
-            className="flex items-center gap-2 text-sm font-medium text-muted hover:text-ink"
-          >
-            <span>{showIncome ? '▴' : '▾'}</span>
-            Income analysis
-          </button>
-          {showIncome && (
-            <div className="mt-4">
-              <IncomeDashboard />
-            </div>
-          )}
-        </section>
-
-        {/* Trends (toggle) */}
-        <section>
-          <button
-            onClick={() => setShowTrends((v) => !v)}
-            className="flex items-center gap-2 text-sm font-medium text-muted hover:text-ink"
-          >
-            <span>{showTrends ? '▴' : '▾'}</span>
-            Trends
-          </button>
-          {showTrends && (
-            <div className="mt-4">
-              <TrendsChart />
-            </div>
-          )}
-        </section>
-
-        {/* Analytics (toggle) */}
-        <section>
-          <button
-            onClick={() => setShowAnalytics((v) => !v)}
-            className="flex items-center gap-2 text-sm font-medium text-muted hover:text-ink"
-          >
-            <span>{showAnalytics ? '▴' : '▾'}</span>
-            Analytics
-          </button>
-          {showAnalytics && (
-            <div className="mt-4">
-              <AnalyticsPanel />
-            </div>
-          )}
-        </section>
-
-        {/* Budget (toggle) */}
-        <section>
-          <button
-            onClick={() => setShowBudget((v) => !v)}
-            className="flex items-center gap-2 text-sm font-medium text-muted hover:text-ink"
-          >
-            <span>{showBudget ? '▴' : '▾'}</span>
-            Budget
-          </button>
-          {showBudget && (
-            <div className="mt-4 space-y-6 rounded-lg border border-border bg-surface p-5">
-              <BudgetManager />
-              <div className="border-t border-border pt-4">
-                <PlanVsActual />
-              </div>
-            </div>
-          )}
-        </section>
-      </main>
+        </main>
+      </div>
     </div>
+    </ToastProvider>
   );
 }
