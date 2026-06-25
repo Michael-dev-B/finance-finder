@@ -11,7 +11,7 @@ export default function CategoryChart() {
     .map(([id, cents]) => ({
       name: categoryMap.get(id)?.name ?? 'Uncategorised',
       value: cents,
-      colour: categoryMap.get(id)?.colour ?? '#94a3b8',
+      colour: categoryMap.get(id)?.colour ?? 'var(--color-muted)',
     }))
     .sort((a, b) => b.value - a.value);
 

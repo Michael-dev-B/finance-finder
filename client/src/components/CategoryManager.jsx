@@ -1,18 +1,22 @@
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import {
   useStore, ADD_CATEGORY, UPDATE_CATEGORY, DELETE_CATEGORY,
 } from '../store/index.js';
 import { createCategory, updateCategory, deleteCategory } from '../api/categories.js';
 import { formatZAR, parseCentsFromInput } from '../lib/money.js';
+import { useToast } from './Toast.jsx';
 
 const DEFAULTS = { name: '', colour: '#22c55e', budget: '', groupId: '' };
 
 export default function CategoryManager() {
   const { state, dispatch } = useStore();
+  const toast = useToast();
   const [editingCategory, setEditingCategory] = useState(null);
   const [fields, setFields] = useState(DEFAULTS);
   const [error, setError] = useState('');
   const [saving, setSaving] = useState(false);
+  const [pendingDelete, setPendingDelete] = useState(null);
+  const deleteTimer = useRef(null);
 
   function startEdit(cat) {
     setEditingCategory(cat);
@@ -77,6 +81,24 @@ export default function CategoryManager() {
   async function handleDelete(id) {
     await deleteCategory(id);
     dispatch({ type: DELETE_CATEGORY, payload: id });
+    toast('Category deleted');
+  }
+
+  function requestDelete(id) {
+    clearTimeout(deleteTimer.current);
+    setPendingDelete(id);
+    deleteTimer.current = setTimeout(() => setPendingDelete(null), 5000);
+  }
+
+  function cancelDelete() {
+    clearTimeout(deleteTimer.current);
+    setPendingDelete(null);
+  }
+
+  async function confirmDelete(id) {
+    clearTimeout(deleteTimer.current);
+    setPendingDelete(null);
+    await handleDelete(id);
   }
 
   const groupMap = new Map(state.categoryGroups.map((g) => [g.id, g.name]));
@@ -176,18 +198,17 @@ export default function CategoryManager() {
                 )}
               </span>
               <span className="flex gap-3 text-xs">
-                <button
-                  onClick={() => startEdit(cat)}
-                  className="text-muted hover:text-ink"
-                >
+                <button onClick={() => startEdit(cat)} className="text-muted hover:text-ink">
                   Edit
                 </button>
-                <button
-                  onClick={() => handleDelete(cat.id)}
-                  className="text-muted hover:text-expense"
-                >
-                  Delete
-                </button>
+                {pendingDelete === cat.id ? (
+                  <>
+                    <button onClick={cancelDelete} className="text-muted hover:text-ink">Cancel</button>
+                    <button onClick={() => confirmDelete(cat.id)} className="font-medium text-expense hover:opacity-80">Delete!</button>
+                  </>
+                ) : (
+                  <button onClick={() => requestDelete(cat.id)} className="text-muted hover:text-expense">Delete</button>
+                )}
               </span>
             </li>
           ))}

@@ -1,15 +1,19 @@
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import { useStore, ADD_TAG, UPDATE_TAG, DELETE_TAG } from '../store/index.js';
 import { createTag, updateTag, deleteTag } from '../api/tags.js';
+import { useToast } from './Toast.jsx';
 
 const DEFAULTS = { name: '', colour: '#569cd6' };
 
 export default function TagManager() {
   const { state, dispatch } = useStore();
+  const toast = useToast();
   const [editingTag, setEditingTag] = useState(null);
   const [fields, setFields] = useState(DEFAULTS);
   const [error, setError] = useState('');
   const [saving, setSaving] = useState(false);
+  const [pendingDelete, setPendingDelete] = useState(null);
+  const deleteTimer = useRef(null);
 
   function startEdit(tag) {
     setEditingTag(tag);
@@ -55,6 +59,24 @@ export default function TagManager() {
   async function handleDelete(id) {
     await deleteTag(id);
     dispatch({ type: DELETE_TAG, payload: id });
+    toast('Tag deleted');
+  }
+
+  function requestDelete(id) {
+    clearTimeout(deleteTimer.current);
+    setPendingDelete(id);
+    deleteTimer.current = setTimeout(() => setPendingDelete(null), 5000);
+  }
+
+  function cancelDelete() {
+    clearTimeout(deleteTimer.current);
+    setPendingDelete(null);
+  }
+
+  async function confirmDelete(id) {
+    clearTimeout(deleteTimer.current);
+    setPendingDelete(null);
+    await handleDelete(id);
   }
 
   return (
@@ -118,12 +140,15 @@ export default function TagManager() {
                 <span className="text-sm font-medium text-ink">{tag.name}</span>
               </span>
               <span className="flex gap-3 text-xs">
-                <button onClick={() => startEdit(tag)} className="text-muted hover:text-ink">
-                  Edit
-                </button>
-                <button onClick={() => handleDelete(tag.id)} className="text-muted hover:text-expense">
-                  Delete
-                </button>
+                <button onClick={() => startEdit(tag)} className="text-muted hover:text-ink">Edit</button>
+                {pendingDelete === tag.id ? (
+                  <>
+                    <button onClick={cancelDelete} className="text-muted hover:text-ink">Cancel</button>
+                    <button onClick={() => confirmDelete(tag.id)} className="font-medium text-expense hover:opacity-80">Delete!</button>
+                  </>
+                ) : (
+                  <button onClick={() => requestDelete(tag.id)} className="text-muted hover:text-expense">Delete</button>
+                )}
               </span>
             </li>
           ))}

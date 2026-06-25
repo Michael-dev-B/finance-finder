@@ -1,20 +1,7 @@
 import { useState } from 'react';
 import { useStore, UPDATE_TRANSACTION, ADD_TRANSACTION } from '../store/index.js';
+import { splitTransaction } from '../api/transactions.js';
 import { formatZAR, parseCentsFromInput } from '../lib/money.js';
-
-async function splitTransaction(id, splits) {
-  const res = await fetch(
-    `${import.meta.env.VITE_API_BASE_URL ?? 'http://localhost:4000'}/api/transactions/${id}/split`,
-    {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ splits }),
-    },
-  );
-  const data = await res.json();
-  if (!res.ok) throw Object.assign(new Error(data.error ?? 'Split failed'), { status: res.status, data });
-  return data;
-}
 
 const EMPTY_ROW = { amount: '', categoryId: '', note: '' };
 
@@ -75,7 +62,7 @@ export default function SplitModal({ transaction, onClose }) {
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-bg/80 p-4">
-      <div className="w-full max-w-lg rounded-lg border border-border bg-surface shadow-xl">
+      <div className="w-full max-w-lg rounded-lg border border-border bg-surface">
         <div className="border-b border-border px-5 py-4">
           <h2 className="text-sm font-semibold text-ink">
             Split transaction — {formatZAR(parentCents)}

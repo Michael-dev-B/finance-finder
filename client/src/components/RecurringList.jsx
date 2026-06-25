@@ -1,7 +1,8 @@
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import { useStore, UPDATE_RECURRING, DELETE_RECURRING } from '../store/index.js';
 import { updateRecurring, deleteRecurring } from '../api/recurring.js';
 import { formatZAR } from '../lib/money.js';
+import { useToast } from './Toast.jsx';
 
 const FREQ_LABELS = {
   weekly:    'Weekly',
@@ -13,8 +14,11 @@ const FREQ_LABELS = {
 
 export default function RecurringList({ onEdit }) {
   const { state, dispatch } = useStore();
+  const toast = useToast();
   const categoryMap = new Map(state.categories.map((c) => [c.id, c]));
   const [toggling, setToggling] = useState(null);
+  const [pendingDelete, setPendingDelete] = useState(null);
+  const deleteTimer = useRef(null);
 
   async function handleToggle(item) {
     setToggling(item.id);
@@ -41,6 +45,24 @@ export default function RecurringList({ onEdit }) {
   async function handleDelete(id) {
     await deleteRecurring(id);
     dispatch({ type: DELETE_RECURRING, payload: id });
+    toast('Recurring item deleted');
+  }
+
+  function requestDelete(id) {
+    clearTimeout(deleteTimer.current);
+    setPendingDelete(id);
+    deleteTimer.current = setTimeout(() => setPendingDelete(null), 5000);
+  }
+
+  function cancelDelete() {
+    clearTimeout(deleteTimer.current);
+    setPendingDelete(null);
+  }
+
+  async function confirmDelete(id) {
+    clearTimeout(deleteTimer.current);
+    setPendingDelete(null);
+    await handleDelete(id);
   }
 
   if (state.recurring.length === 0) {
@@ -97,12 +119,14 @@ export default function RecurringList({ onEdit }) {
               >
                 Edit
               </button>
-              <button
-                onClick={() => handleDelete(item.id)}
-                className="text-muted hover:text-expense"
-              >
-                Delete
-              </button>
+              {pendingDelete === item.id ? (
+                <>
+                  <button onClick={cancelDelete} className="text-muted hover:text-ink">Cancel</button>
+                  <button onClick={() => confirmDelete(item.id)} className="font-medium text-expense hover:opacity-80">Delete!</button>
+                </>
+              ) : (
+                <button onClick={() => requestDelete(item.id)} className="text-muted hover:text-expense">Delete</button>
+              )}
             </div>
           </li>
         );
