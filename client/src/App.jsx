@@ -7,6 +7,9 @@ import { useScrollProgress } from './motion/useScrollProgress.js';
 import { ToastProvider } from './components/Toast.jsx';
 import { RevealView } from './motion/Reveal.jsx';
 import HideawayNav from './components/HideawayNav.jsx';
+import HeroBackdrop from './three/HeroBackdrop.jsx';
+import { useJourneyData } from './three/useJourneyData.js';
+import { MonthOverlay, TrendsOverlay } from './components/JourneyOverlays.jsx';
 import MonthlySummary from './components/MonthlySummary.jsx';
 import CategoryChart from './components/CategoryChart.jsx';
 import TransactionForm from './components/TransactionForm.jsx';
@@ -88,6 +91,7 @@ export default function App() {
   const [editingTransaction, setEditingTransaction] = useState(null);
   const [editingRecurring, setEditingRecurring]   = useState(null);
   const landedRef = useRef(false);
+  const journey = useJourneyData();
 
   const contentReady = !(state.loading && state.categories.length === 0);
 
@@ -274,6 +278,7 @@ export default function App() {
 
   return (
     <ToastProvider>
+      <HeroBackdrop data={journey} />
       <HideawayNav activeView={activeView} onNavigate={navigate} />
 
       {/* Act I — cinematic hero (brand register). Transparent: the fixed WebGL canvas
@@ -284,6 +289,23 @@ export default function App() {
         className="relative h-[100svh] overflow-hidden"
       >
         <HeroOverlay />
+      </section>
+
+      {/* Act I journey — real-data scenes (brand register). Transparent so the WebGL
+          scenes show through; opaque under reduced motion so the poster doesn't bleed. */}
+      <section
+        id="journey-month"
+        data-register="cinematic"
+        className={`relative h-[100svh] overflow-hidden${reduced ? ' bg-bg' : ''}`}
+      >
+        <MonthOverlay data={journey} />
+      </section>
+      <section
+        id="journey-trends"
+        data-register="cinematic"
+        className={`relative h-[100svh] overflow-hidden${reduced ? ' bg-bg' : ''}`}
+      >
+        <TrendsOverlay data={journey} />
       </section>
 
       {/* Act II — the docked Command Room. Today's shell, behavior unchanged; the inner

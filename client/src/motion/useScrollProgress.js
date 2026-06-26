@@ -37,3 +37,40 @@ export function useScrollProgress() {
 
   return progress;
 }
+
+/**
+ * How centered a given full-viewport section is: 1 when section `index` fills the
+ * viewport, fading to 0 a viewport away in either direction. Drives the journey
+ * overlays' fade-in/out as the viewer scrolls between scenes.
+ *
+ * Under reduced motion this is a constant 1 — each opaque section's overlay is simply
+ * visible when reached (no scroll-driven fade).
+ */
+export function useSectionFocus(index) {
+  const reduced = useReducedMotion();
+  const [focus, setFocus] = useState(reduced ? 1 : 0);
+
+  useEffect(() => {
+    if (reduced) {
+      setFocus(1);
+      return;
+    }
+    let raf = 0;
+    const update = () => {
+      raf = 0;
+      const h = window.innerHeight || 1;
+      setFocus(Math.max(0, 1 - Math.abs(window.scrollY / h - index)));
+    };
+    const onScroll = () => {
+      if (!raf) raf = requestAnimationFrame(update);
+    };
+    update();
+    window.addEventListener('scroll', onScroll, { passive: true });
+    return () => {
+      window.removeEventListener('scroll', onScroll);
+      if (raf) cancelAnimationFrame(raf);
+    };
+  }, [reduced, index]);
+
+  return focus;
+}
