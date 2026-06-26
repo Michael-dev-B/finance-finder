@@ -6,7 +6,7 @@ import {
 import { useStore } from '../store/index.js';
 import { getIncomeSummary } from '../api/income.js';
 import { formatZAR } from '../lib/money.js';
-import { currentMonth, monthLabel } from '../lib/date.js';
+import { currentMonth } from '../lib/date.js';
 
 const MONTH_ABBR = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
 
