@@ -51,3 +51,17 @@ a {
   transition: color 150ms ease, background-color 150ms ease,
     border-color 150ms ease, opacity 150ms ease;
 }
+
+/* Reduced motion = fast mode: collapse all animation to instant.
+   JS motion helpers also branch on the useReducedMotion hook; this is the
+   belt-and-suspenders CSS safety net. */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
