@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useStore, ADD_TRANSACTION, UPDATE_TRANSACTION } from '../store/index.js';
 import { createTransaction, updateTransaction } from '../api/transactions.js';
 import { parseCentsFromInput } from '../lib/money.js';
@@ -15,6 +15,12 @@ export default function TransactionForm({ editing, onDone }) {
   const [fields, setFields] = useState(DEFAULTS);
   const [error, setError] = useState('');
   const [saving, setSaving] = useState(false);
+  const amountRef = useRef(null);
+
+  // Land ready to type when adding — serves the "log a transaction in under 10s" goal.
+  useEffect(() => {
+    if (!editing) amountRef.current?.focus();
+  }, [editing]);
 
   useEffect(() => {
     if (editing) {
@@ -95,6 +101,7 @@ export default function TransactionForm({ editing, onDone }) {
         <div>
           <label className="mb-1 block text-sm font-medium text-ink">Amount (R)</label>
           <input
+            ref={amountRef}
             type="text"
             inputMode="decimal"
             placeholder="0,00"

@@ -2,7 +2,8 @@ import { useState } from 'react';
 import { useStore, SET_ACTIVE_MONTH } from './store/index.js';
 import { monthLabel } from './lib/date.js';
 import { ToastProvider } from './components/Toast.jsx';
-import Sidebar from './components/Sidebar.jsx';
+import { RevealView } from './motion/Reveal.jsx';
+import HideawayNav from './components/HideawayNav.jsx';
 import MonthlySummary from './components/MonthlySummary.jsx';
 import CategoryChart from './components/CategoryChart.jsx';
 import TransactionForm from './components/TransactionForm.jsx';
@@ -16,6 +17,12 @@ import IncomeDashboard from './components/IncomeDashboard.jsx';
 import TrendsChart from './components/TrendsChart.jsx';
 import AnalyticsPanel from './components/AnalyticsPanel.jsx';
 import BudgetManager from './components/BudgetManager.jsx';
+
+const LAST_VIEW_KEY = 'ff:lastView';
+const VALID_VIEWS = new Set([
+  'dashboard', 'transactions', 'income', 'trends', 'analytics',
+  'categories', 'tags', 'recurring', 'budget',
+]);
 
 function ViewHeading({ children }) {
   return <h2 className="text-lg font-semibold text-ink">{children}</h2>;
@@ -37,9 +44,17 @@ function nextMonth(yyyyMm) {
 
 export default function App() {
   const { state, dispatch } = useStore();
-  const [activeView, setActiveView]               = useState('dashboard');
+  const [activeView, setActiveView]               = useState(() => {
+    const saved = typeof window !== 'undefined' && localStorage.getItem(LAST_VIEW_KEY);
+    return VALID_VIEWS.has(saved) ? saved : 'dashboard';
+  });
   const [editingTransaction, setEditingTransaction] = useState(null);
   const [editingRecurring, setEditingRecurring]   = useState(null);
+
+  function navigate(view) {
+    setActiveView(view);
+    try { localStorage.setItem(LAST_VIEW_KEY, view); } catch { /* ignore unavailable storage */ }
+  }
 
   function handleMonthChange(month) {
     dispatch({ type: SET_ACTIVE_MONTH, payload: month });
@@ -203,7 +218,7 @@ export default function App() {
 
       {/* Two-column shell: sidebar + content */}
       <div className="flex flex-1 overflow-hidden">
-        <Sidebar activeView={activeView} onNavigate={setActiveView} />
+        <HideawayNav activeView={activeView} onNavigate={navigate} />
 
         <main className="flex-1 overflow-y-auto">
           <div className="mx-auto max-w-5xl space-y-6 px-4 py-6 sm:px-6">
@@ -212,7 +227,7 @@ export default function App() {
                 {state.error}
               </div>
             )}
-            {renderView()}
+            <RevealView key={activeView} className="space-y-6">{renderView()}</RevealView>
           </div>
         </main>
       </div>
