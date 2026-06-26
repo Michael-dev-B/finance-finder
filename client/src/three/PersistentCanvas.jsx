@@ -2,34 +2,38 @@ import { useEffect, useState } from 'react';
 import { Canvas } from '@react-three/fiber';
 import { EffectComposer, Bloom } from '@react-three/postprocessing';
 import HeroScene from '../scenes/HeroScene.jsx';
+import MonthScene from '../scenes/MonthScene.jsx';
+import TrendsScene from '../scenes/TrendsScene.jsx';
 
 /**
- * The single, persistent WebGL canvas — fixed behind all content. Renders the hero
- * signal-wave scene with brand bloom.
+ * The single, persistent WebGL canvas — fixed behind all content. Renders the whole Act I
+ * journey (hero waves → this-month towers → trend lines); each scene self-fades by scroll,
+ * so all three stay mounted (they're light). Data scenes receive cents as props.
  *
- * Perf: the render loop runs only while the hero is on screen AND the tab is visible.
- * When the opaque workspace docks over the canvas (hero offscreen) or the tab is hidden,
- * `frameloop` flips to "never" and the GPU rests. One canvas, never per-section.
+ * Perf: the render loop runs through the journey and flips `frameloop` to "never" once the
+ * opaque workspace docks over the canvas (IntersectionObserver on #workspace) or the tab is
+ * hidden. One canvas, never per-section.
  */
-export default function PersistentCanvas() {
+export default function PersistentCanvas({ data }) {
   const [active, setActive] = useState(true);
 
   useEffect(() => {
-    let inView = true;
+    let docked = false;
     let visible = !document.hidden;
-    const apply = () => setActive(inView && visible);
+    const apply = () => setActive(!docked && visible);
 
-    const hero = document.getElementById('hero');
+    const workspace = document.getElementById('workspace');
     let io;
-    if (hero && 'IntersectionObserver' in window) {
+    if (workspace && 'IntersectionObserver' in window) {
       io = new IntersectionObserver(
         (entries) => {
-          inView = entries.some((e) => e.isIntersecting);
+          const e = entries[0];
+          docked = e.isIntersecting && e.intersectionRatio >= 0.99;
           apply();
         },
-        { threshold: 0 },
+        { threshold: [0, 0.5, 0.99, 1] },
       );
-      io.observe(hero);
+      io.observe(workspace);
     }
     const onVisibility = () => {
       visible = !document.hidden;
@@ -55,6 +59,8 @@ export default function PersistentCanvas() {
     >
       <color attach="background" args={['#0b0e13']} />
       <HeroScene />
+      <MonthScene topCats={data?.topCats ?? []} />
+      <TrendsScene trends={data?.trends ?? null} />
       <EffectComposer>
         <Bloom
           intensity={1.4}
