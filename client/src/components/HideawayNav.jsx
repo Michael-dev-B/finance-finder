@@ -140,7 +140,7 @@ export default function HideawayNav({ activeView, onNavigate }) {
   return (
     <nav
       aria-label="Primary"
-      className="relative z-30 w-14 shrink-0"
+      className="fixed inset-y-0 left-0 z-30 w-14"
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
       onFocus={() => setFocused(true)}

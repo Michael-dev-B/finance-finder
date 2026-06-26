@@ -18,6 +18,14 @@
   --font-family-mono: ui-monospace, 'Cascadia Code', monospace;
 }
 
+/* Cinematic layer (brand register) — scoped to Act I only. This is the documented
+   exception (DESIGN.md §7) to the Command Room's No-Display rule: display type and
+   decorative brand color are allowed *here* and nowhere else. The product-register
+   workspace below the hero inherits none of this. Display ceiling stays ≤ 6rem. */
+[data-register='cinematic'] {
+  --text-display: clamp(2.5rem, 8vw, 5rem);
+}
+
 /* Base styles */
 body {
   color-scheme: dark;
