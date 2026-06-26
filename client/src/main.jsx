@@ -3,11 +3,14 @@ import { createRoot } from 'react-dom/client';
 import './styles/global.css';
 import App from './App.jsx';
 import { StoreProvider } from './store/index.js';
+import LenisProvider from './motion/LenisProvider.jsx';
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>
-    <StoreProvider>
-      <App />
-    </StoreProvider>
+    <LenisProvider>
+      <StoreProvider>
+        <App />
+      </StoreProvider>
+    </LenisProvider>
   </StrictMode>,
 );
