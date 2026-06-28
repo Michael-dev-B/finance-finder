@@ -4,6 +4,7 @@ import { EffectComposer, Bloom } from '@react-three/postprocessing';
 import HeroScene from '../scenes/HeroScene.jsx';
 import MonthScene from '../scenes/MonthScene.jsx';
 import TrendsScene from '../scenes/TrendsScene.jsx';
+import BudgetScene from '../scenes/BudgetScene.jsx';
 
 /**
  * The single, persistent WebGL canvas — fixed behind all content. Renders the whole Act I
@@ -61,6 +62,7 @@ export default function PersistentCanvas({ data }) {
       <HeroScene />
       <MonthScene topCats={data?.topCats ?? []} />
       <TrendsScene trends={data?.trends ?? null} />
+      <BudgetScene budget={data?.budget ?? []} />
       <EffectComposer>
         <Bloom
           intensity={1.4}
