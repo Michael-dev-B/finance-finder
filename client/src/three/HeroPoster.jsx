@@ -26,7 +26,7 @@ const LINES = Array.from({ length: 9 }, (_, i) => ({
 
 export default function HeroPoster() {
   return (
-    <div aria-hidden className="pointer-events-none fixed inset-0 -z-10 bg-bg">
+    <div aria-hidden className="pointer-events-none fixed inset-0 -z-10">
       <div
         className="absolute left-1/2 top-1/2 h-[55vmin] w-[80vmin] -translate-x-1/2 -translate-y-1/2 rounded-full opacity-40 blur-3xl"
         style={{ background: 'radial-gradient(closest-side, var(--color-accent), transparent)' }}

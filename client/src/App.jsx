@@ -6,6 +6,7 @@ import { useScrollProgress } from './motion/useScrollProgress.js';
 import { ToastProvider } from './components/Toast.jsx';
 import HideawayNav from './components/HideawayNav.jsx';
 import HeroBackdrop from './three/HeroBackdrop.jsx';
+import AmbientBackground from './components/AmbientBackground.jsx';
 import { useJourneyData } from './three/useJourneyData.js';
 import { MonthOverlay, TrendsOverlay, BudgetOverlay } from './components/JourneyOverlays.jsx';
 import LazySection from './components/LazySection.jsx';
@@ -149,10 +150,13 @@ export default function App() {
     );
   }
 
-  const sectionClass = 'bg-bg pl-14';
+  // Transparent so the shared Aurora ambient threads behind every workspace view; the views'
+  // own bg-surface cards keep their content readable. pl-14 leaves room for the fixed rail.
+  const sectionClass = 'pl-14';
 
   return (
     <ToastProvider>
+      <AmbientBackground />
       <HeroBackdrop data={journey} />
       <HideawayNav activeView={activeSection} onNavigate={scrollToSection} />
       <MonthBar />
@@ -166,25 +170,26 @@ export default function App() {
         <HeroOverlay />
       </section>
 
-      {/* Act I journey — real-data scenes. Transparent for WebGL; opaque under reduced motion. */}
+      {/* Act I journey — real-data scenes over the shared aurora: the WebGL scenes show
+          through in motion; the DOM overlays carry the same numbers under reduced motion. */}
       <section
         id="journey-month"
         data-register="cinematic"
-        className={`relative h-[100svh] overflow-hidden${reduced ? ' bg-bg' : ''}`}
+        className="relative h-[100svh] overflow-hidden"
       >
         <MonthOverlay data={journey} />
       </section>
       <section
         id="journey-trends"
         data-register="cinematic"
-        className={`relative h-[100svh] overflow-hidden${reduced ? ' bg-bg' : ''}`}
+        className="relative h-[100svh] overflow-hidden"
       >
         <TrendsOverlay data={journey} />
       </section>
       <section
         id="journey-budget"
         data-register="cinematic"
-        className={`relative h-[100svh] overflow-hidden${reduced ? ' bg-bg' : ''}`}
+        className="relative h-[100svh] overflow-hidden"
       >
         <BudgetOverlay data={journey} />
       </section>

@@ -22,7 +22,7 @@ export default function AnalysisFilmstrip({ onActivePanel }) {
     return (
       <>
         {PANELS.map((panel) => (
-          <LazySection key={panel.id} id={`view-${panel.id}`} className="bg-bg pl-14">
+          <LazySection key={panel.id} id={`view-${panel.id}`} className="pl-14">
             <panel.Comp />
           </LazySection>
         ))}
@@ -93,7 +93,7 @@ function Pinned({ onActivePanel }) {
         {PANELS.map((panel) => (
           <div
             key={panel.id}
-            className="flex h-full w-screen shrink-0 items-center overflow-hidden bg-bg pl-14"
+            className="flex h-full w-screen shrink-0 items-center overflow-hidden pl-14"
           >
             {near ? <panel.Comp /> : null}
           </div>
