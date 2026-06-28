@@ -9,7 +9,7 @@ import { RevealView } from './motion/Reveal.jsx';
 import HideawayNav from './components/HideawayNav.jsx';
 import HeroBackdrop from './three/HeroBackdrop.jsx';
 import { useJourneyData } from './three/useJourneyData.js';
-import { MonthOverlay, TrendsOverlay } from './components/JourneyOverlays.jsx';
+import { MonthOverlay, TrendsOverlay, BudgetOverlay } from './components/JourneyOverlays.jsx';
 import MonthlySummary from './components/MonthlySummary.jsx';
 import CategoryChart from './components/CategoryChart.jsx';
 import TransactionForm from './components/TransactionForm.jsx';
@@ -306,6 +306,13 @@ export default function App() {
         className={`relative h-[100svh] overflow-hidden${reduced ? ' bg-bg' : ''}`}
       >
         <TrendsOverlay data={journey} />
+      </section>
+      <section
+        id="journey-budget"
+        data-register="cinematic"
+        className={`relative h-[100svh] overflow-hidden${reduced ? ' bg-bg' : ''}`}
+      >
+        <BudgetOverlay data={journey} />
       </section>
 
       {/* Act II — the docked Command Room. Today's shell, behavior unchanged; the inner

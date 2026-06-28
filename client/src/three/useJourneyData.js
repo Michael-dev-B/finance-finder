@@ -1,5 +1,10 @@
 import { useState, useEffect, useMemo } from 'react';
-import { useStore, selectMonthlyTotals, selectCategorySpend } from '../store/index.js';
+import {
+  useStore,
+  selectMonthlyTotals,
+  selectCategorySpend,
+  selectBudgetRemaining,
+} from '../store/index.js';
 import { getAnalyticsTrends } from '../api/analytics.js';
 import { currentMonth } from '../lib/date.js';
 
@@ -72,8 +77,29 @@ export function useJourneyData() {
       .slice(0, TOP_CATEGORIES);
   }, [state]);
 
+  // Budgeted categories with spend % — mirrors BudgetManager (status thresholds applied
+  // at the scene/overlay layer). Most-stressed first.
+  const budget = useMemo(
+    () =>
+      selectBudgetRemaining(state)
+        .map(({ category, spentCents }) => {
+          const budgetCents = category.monthly_budget_cents;
+          return {
+            id: category.id,
+            name: category.name,
+            colour: category.colour,
+            spentCents,
+            budgetCents,
+            pct: budgetCents ? Math.round((spentCents / budgetCents) * 100) : 0,
+          };
+        })
+        .sort((a, b) => b.pct - a.pct)
+        .slice(0, TOP_CATEGORIES),
+    [state],
+  );
+
   return useMemo(
-    () => ({ activeMonth, month, topCats, trends }),
-    [activeMonth, month, topCats, trends],
+    () => ({ activeMonth, month, topCats, trends, budget }),
+    [activeMonth, month, topCats, trends, budget],
   );
 }
