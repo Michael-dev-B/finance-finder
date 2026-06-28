@@ -7,13 +7,16 @@ import TrendsScene from '../scenes/TrendsScene.jsx';
 import BudgetScene from '../scenes/BudgetScene.jsx';
 
 /**
- * The single, persistent WebGL canvas — fixed behind all content. Renders the whole Act I
- * journey (hero waves → this-month towers → trend lines); each scene self-fades by scroll,
- * so all three stay mounted (they're light). Data scenes receive cents as props.
+ * The single, persistent WebGL canvas — fixed behind all content, and transparent (alpha clear,
+ * no opaque background) so the shared Aurora ambient (components/AmbientBackground) shows through
+ * as the common base in both acts. Renders the Act I journey (hero signal-waves → this-month
+ * towers → trend lines → budget rings); each scene self-fades by scroll, so all stay mounted
+ * (they're light). Data scenes receive cents as props.
  *
- * Perf: the render loop runs through the journey and flips `frameloop` to "never" once the
- * opaque workspace docks over the canvas (IntersectionObserver on #workspace) or the tab is
- * hidden. One canvas, never per-section.
+ * Perf: the loop runs through the journey and flips `frameloop` to "never" once Act II (the
+ * working app) reaches the top (IntersectionObserver on #act2) or the tab is hidden — the
+ * cinematic scenes are Act I only; the CSS aurora carries the workspace. One canvas, never
+ * per-section.
  */
 export default function PersistentCanvas({ data }) {
   const [active, setActive] = useState(true);
@@ -56,10 +59,10 @@ export default function PersistentCanvas({ data }) {
       style={{ position: 'fixed', inset: 0, zIndex: -10, pointerEvents: 'none' }}
       frameloop={active ? 'always' : 'never'}
       camera={{ position: [0, 0, 7], fov: 50 }}
-      gl={{ antialias: true }}
+      // alpha: transparent clear so the Aurora ambient behind the canvas is the shared base.
+      gl={{ antialias: true, alpha: true }}
       dpr={[1, 2]}
     >
-      <color attach="background" args={['#0b0e13']} />
       <HeroScene />
       <MonthScene topCats={data?.topCats ?? []} />
       <TrendsScene trends={data?.trends ?? null} />
