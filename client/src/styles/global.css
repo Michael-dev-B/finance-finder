@@ -18,6 +18,14 @@
   --font-family-mono: ui-monospace, 'Cascadia Code', monospace;
 }
 
+/* Cinematic layer (brand register) — scoped to Act I only. This is the documented
+   exception (DESIGN.md §7) to the Command Room's No-Display rule: display type and
+   decorative brand color are allowed *here* and nowhere else. The product-register
+   workspace below the hero inherits none of this. Display ceiling stays ≤ 6rem. */
+[data-register='cinematic'] {
+  --text-display: clamp(2.5rem, 8vw, 5rem);
+}
+
 /* Base styles */
 body {
   color-scheme: dark;
@@ -50,4 +58,95 @@ select,
 a {
   transition: color 150ms ease, background-color 150ms ease,
     border-color 150ms ease, opacity 150ms ease;
+}
+
+/* Reduced motion = fast mode: collapse all animation to instant.
+   JS motion helpers also branch on the useReducedMotion hook; this is the
+   belt-and-suspenders CSS safety net. */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* ── Site-wide ambient backdrop (Aurora drift) ──────────────────────────────────────────
+   The connective atmosphere behind every view (components/AmbientBackground.jsx): a few large,
+   soft brand glows breathing slowly on Command Black. Faint by construction so dashboard
+   text/tables stay readable; the reduce block above freezes the motion to a static wash. */
+.aurora {
+  position: absolute;
+  border-radius: 9999px;
+  filter: blur(90px);
+  will-change: transform;
+}
+.aurora-a {
+  width: 70vmax;
+  height: 70vmax;
+  left: -12vmax;
+  top: -22vmax;
+  background: radial-gradient(
+    closest-side,
+    color-mix(in oklch, var(--color-primary) 20%, transparent),
+    transparent 70%
+  );
+  animation: aurora-drift-a 38s ease-in-out infinite alternate;
+}
+.aurora-b {
+  width: 60vmax;
+  height: 60vmax;
+  right: -16vmax;
+  top: 18vh;
+  background: radial-gradient(
+    closest-side,
+    color-mix(in oklch, var(--color-accent) 22%, transparent),
+    transparent 70%
+  );
+  animation: aurora-drift-b 46s ease-in-out infinite alternate;
+}
+.aurora-c {
+  width: 55vmax;
+  height: 55vmax;
+  left: 18vw;
+  bottom: -26vmax;
+  background: radial-gradient(
+    closest-side,
+    color-mix(in oklch, var(--color-primary) 15%, transparent),
+    transparent 70%
+  );
+  animation: aurora-drift-c 54s ease-in-out infinite alternate;
+}
+.ambient-vignette {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(125% 95% at 50% 38%, transparent 55%, var(--color-bg) 100%);
+}
+
+@keyframes aurora-drift-a {
+  from {
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+  to {
+    transform: translate3d(6vw, 4vh, 0) scale(1.12);
+  }
+}
+@keyframes aurora-drift-b {
+  from {
+    transform: translate3d(0, 0, 0) scale(1.05);
+  }
+  to {
+    transform: translate3d(-5vw, -3vh, 0) scale(1);
+  }
+}
+@keyframes aurora-drift-c {
+  from {
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+  to {
+    transform: translate3d(4vw, -5vh, 0) scale(1.1);
+  }
 }
