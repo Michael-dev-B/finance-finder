@@ -23,18 +23,19 @@ export default function PersistentCanvas({ data }) {
     let visible = !document.hidden;
     const apply = () => setActive(!docked && visible);
 
-    const workspace = document.getElementById('workspace');
+    // Pause once Act II (the working app) reaches the top of the viewport — the cinematic
+    // journey is behind us. The bottom margin collapses the root to a thin strip at the top.
+    const act2 = document.getElementById('act2');
     let io;
-    if (workspace && 'IntersectionObserver' in window) {
+    if (act2 && 'IntersectionObserver' in window) {
       io = new IntersectionObserver(
         (entries) => {
-          const e = entries[0];
-          docked = e.isIntersecting && e.intersectionRatio >= 0.99;
+          docked = entries[0].isIntersecting;
           apply();
         },
-        { threshold: [0, 0.5, 0.99, 1] },
+        { rootMargin: '0px 0px -99% 0px' },
       );
-      io.observe(workspace);
+      io.observe(act2);
     }
     const onVisibility = () => {
       visible = !document.hidden;
