@@ -26,8 +26,9 @@ const tooltipStyle = {
   fontSize: '0.75rem',
   borderColor: 'var(--color-border)',
   backgroundColor: 'var(--color-surface)',
-  color: 'var(--color-ink)',
 };
+const labelStyle = { color: '#fff' };
+const itemStyle  = { color: '#fff' };
 
 export default function IncomeDashboard() {
   const { state } = useStore();
@@ -139,6 +140,8 @@ export default function IncomeDashboard() {
             <Tooltip
               formatter={(v) => [formatZAR(v), 'Income']}
               contentStyle={tooltipStyle}
+              labelStyle={labelStyle}
+              itemStyle={itemStyle}
               cursor={{ fill: 'var(--color-border)' }}
             />
             <Bar dataKey="income" fill="var(--color-income)" radius={[3, 3, 0, 0]} />
@@ -150,9 +153,9 @@ export default function IncomeDashboard() {
       {pieData.length > 0 && (
         <div>
           <p className="mb-2 text-xs font-medium text-muted">Income by source</p>
-          <ResponsiveContainer width="100%" height={200}>
+          <ResponsiveContainer width="100%" height={260}>
             <PieChart>
-              <Pie data={pieData} dataKey="value" nameKey="name" cx="50%" cy="50%" outerRadius={70} strokeWidth={1}>
+              <Pie data={pieData} dataKey="value" nameKey="name" cx="50%" cy="43%" outerRadius="72%" strokeWidth={1}>
                 {pieData.map((entry, i) => (
                   <Cell key={i} fill={entry.colour} stroke="var(--color-surface)" />
                 ))}
@@ -160,8 +163,10 @@ export default function IncomeDashboard() {
               <Tooltip
                 formatter={(v) => formatZAR(v)}
                 contentStyle={tooltipStyle}
+                labelStyle={labelStyle}
+                itemStyle={itemStyle}
               />
-              <Legend iconType="circle" iconSize={8} wrapperStyle={{ fontSize: '0.75rem', color: 'var(--color-ink)' }} />
+              <Legend iconType="circle" iconSize={8} wrapperStyle={{ fontSize: '0.75rem', color: '#fff' }} />
             </PieChart>
           </ResponsiveContainer>
         </div>

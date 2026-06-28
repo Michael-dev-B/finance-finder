@@ -27,8 +27,9 @@ const tooltipStyle = {
   fontSize: '0.75rem',
   borderColor: 'var(--color-border)',
   backgroundColor: 'var(--color-surface)',
-  color: 'var(--color-ink)',
 };
+const labelStyle = { color: '#fff' };
+const itemStyle  = { color: '#fff' };
 
 const FALLBACK_COLOURS = [
   'var(--color-primary)',
@@ -132,23 +133,23 @@ export default function AnalyticsPanel() {
       ) : (
         <>
           {/* Chart */}
-          <ResponsiveContainer width="100%" height={220}>
+          <ResponsiveContainer width="100%" height={360}>
             {chartType === 'pie' ? (
               <PieChart>
-                <Pie data={pieData} dataKey="value" nameKey="name" cx="50%" cy="50%" outerRadius={80} strokeWidth={1}>
+                <Pie data={pieData} dataKey="value" nameKey="name" cx="50%" cy="43%" outerRadius="72%" strokeWidth={1}>
                   {pieData.map((entry, i) => (
                     <Cell key={i} fill={entry.colour} stroke="var(--color-surface)" />
                   ))}
                 </Pie>
-                <Tooltip formatter={(v) => formatZAR(v)} contentStyle={tooltipStyle} />
-                <Legend iconType="circle" iconSize={8} wrapperStyle={{ fontSize: '0.75rem', color: 'var(--color-ink)' }} />
+                <Tooltip formatter={(v) => formatZAR(v)} contentStyle={tooltipStyle} labelStyle={labelStyle} itemStyle={itemStyle} />
+                <Legend iconType="circle" iconSize={8} wrapperStyle={{ fontSize: '0.75rem', color: '#fff' }} />
               </PieChart>
             ) : (
               <BarChart data={pieData} layout="vertical" margin={{ top: 0, right: 60, left: 0, bottom: 0 }}>
                 <CartesianGrid strokeDasharray="3 3" stroke="var(--color-border)" horizontal={false} />
                 <XAxis type="number" hide />
                 <YAxis type="category" dataKey="name" tick={{ fontSize: 11, fill: 'var(--color-muted)' }} axisLine={false} tickLine={false} width={100} />
-                <Tooltip formatter={(v) => formatZAR(v)} contentStyle={tooltipStyle} cursor={{ fill: 'var(--color-border)' }} />
+                <Tooltip formatter={(v) => formatZAR(v)} contentStyle={tooltipStyle} labelStyle={labelStyle} itemStyle={itemStyle} cursor={{ fill: 'var(--color-border)' }} />
                 <Bar dataKey="value" radius={[0, 3, 3, 0]}>
                   {pieData.map((entry, i) => (
                     <Cell key={i} fill={entry.colour} />

@@ -16,8 +16,8 @@ export default function CategoryChart() {
     .sort((a, b) => b.value - a.value);
 
   return (
-    <div className="flex flex-col rounded-lg border border-border bg-surface p-5">
-      <h2 className="mb-4 text-sm font-semibold uppercase tracking-wide text-muted">
+    <div className="flex h-full flex-col rounded-lg border border-border bg-surface p-5">
+      <h2 className="mb-4 shrink-0 text-sm font-semibold uppercase tracking-wide text-muted">
         Expense breakdown
       </h2>
       {data.length === 0 ? (
@@ -27,36 +27,40 @@ export default function CategoryChart() {
           </p>
         </div>
       ) : (
-        <ResponsiveContainer width="100%" height={220}>
-          <PieChart>
-            <Pie
-              data={data}
-              dataKey="value"
-              nameKey="name"
-              cx="50%"
-              cy="50%"
-              outerRadius={80}
-              strokeWidth={1}
-            >
-              {data.map((entry, i) => (
-                <Cell key={i} fill={entry.colour} stroke="var(--color-surface)" />
-              ))}
-            </Pie>
-            <Tooltip
-              formatter={(value) => formatZAR(value)}
-              contentStyle={{
-                fontSize: '0.75rem',
-                borderColor: 'var(--color-border)',
-                backgroundColor: 'var(--color-surface)',
-              }}
-            />
-            <Legend
-              iconType="circle"
-              iconSize={8}
-              wrapperStyle={{ fontSize: '0.75rem', color: 'var(--color-ink)' }}
-            />
-          </PieChart>
-        </ResponsiveContainer>
+        <div className="min-h-0 flex-1">
+          <ResponsiveContainer width="100%" height="100%">
+            <PieChart>
+              <Pie
+                data={data}
+                dataKey="value"
+                nameKey="name"
+                cx="50%"
+                cy="43%"
+                outerRadius="72%"
+                strokeWidth={1}
+              >
+                {data.map((entry, i) => (
+                  <Cell key={i} fill={entry.colour} stroke="var(--color-surface)" />
+                ))}
+              </Pie>
+              <Tooltip
+                formatter={(value) => formatZAR(value)}
+                contentStyle={{
+                  fontSize: '0.75rem',
+                  borderColor: 'var(--color-border)',
+                  backgroundColor: 'var(--color-surface)',
+                }}
+                labelStyle={{ color: '#fff' }}
+                itemStyle={{ color: '#fff' }}
+              />
+              <Legend
+                iconType="circle"
+                iconSize={8}
+                wrapperStyle={{ fontSize: '0.75rem', color: '#fff' }}
+              />
+            </PieChart>
+          </ResponsiveContainer>
+        </div>
       )}
     </div>
   );
